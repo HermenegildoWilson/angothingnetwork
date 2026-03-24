@@ -85,30 +85,30 @@ export default function App() {
 
   // Lista de sensores disponíveis/solicitados
   const stations = [
-    {
-      id: 1,
-      name: "Estação Luanda Sul - B1",
-      type: "Água",
-      status: "Ativo",
-      battery: "85%",
-      signal: "Excelente",
-    },
+    // {
+    //   id: 1,
+    //   name: "Estação Luanda Sul - B1",
+    //   type: "Água",
+    //   status: "Ativo",
+    //   battery: "85%",
+    //   signal: "Excelente",
+    // },
     {
       id: 2,
-      name: "Monitoramento Solo - Fazenda Uíge",
+      name: "Monitoramento Ambiental, Uíge",
       type: "Solo",
-      status: "Aguardando Aprovação",
-      battery: "--",
-      signal: "--",
-    },
-    {
-      id: 3,
-      name: "Qualidade Ar - Zona Industrial",
-      type: "Ar",
-      status: "Ativo",
+      status: "Activo",
       battery: "92%",
-      signal: "Bom",
+      signal: "Forte",
     },
+    // {
+    //   id: 3,
+    //   name: "Qualidade Ar - Zona Industrial",
+    //   type: "Ar",
+    //   status: "Ativo",
+    //   battery: "92%",
+    //   signal: "Bom",
+    // },
   ];
 
   if (loading) {

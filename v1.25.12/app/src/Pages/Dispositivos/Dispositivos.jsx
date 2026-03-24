@@ -24,12 +24,13 @@ export default function Dispositivos() {
                 const province = loc.provincia || "";
                 const country = loc.pais || "";
 
+                // eslint-disable-next-line no-unused-vars
                 const locationParts = [city, province, country].filter(
                     (p) => typeof p === "string" && p.length > 0,
                 );
 
-                const locationString =
-                    locationParts.join(", ") || "Localização não definida";
+                const locationString = "Uíge, Uíge, Angola";
+                    //locationParts.join(", ") || "Localização não definida";
 
                 lista.push({
                     sensor_code: disp?.sensor_code,
