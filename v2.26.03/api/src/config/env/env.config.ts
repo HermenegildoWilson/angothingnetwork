@@ -38,5 +38,8 @@ export default () => {
       accessExpiresIn: process.env.JWT_ACCESS_IN,
       refreshExpiresIn: process.env.JWT_REFRESH_IN,
     },
+    cookie: {
+      refreshName: process.env.REFRESH_COOKIE_NAME,
+    },
   };
 };

@@ -53,4 +53,8 @@ export class EnvService {
   get jwtRefreshExpiresIn(): StringValue {
     return this.config.get<string>('jwt.refreshExpiresIn')!;
   }
+
+  get cookieRefreshName(): StringValue {
+    return this.config.get<string>('cookie.refreshName')!;
+  }
 }

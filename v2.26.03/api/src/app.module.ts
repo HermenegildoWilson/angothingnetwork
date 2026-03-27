@@ -7,7 +7,14 @@ import { EnvModule } from './config/env/env.module';
 import { MailModule } from './modules/mail/mail.module';
 
 @Module({
-  imports: [UserModule, SensorModule, AuthModule, PrismaModule, EnvModule, MailModule],
+  imports: [
+    UserModule,
+    SensorModule,
+    AuthModule,
+    PrismaModule,
+    EnvModule,
+    MailModule,
+  ],
   controllers: [],
   providers: [],
 })

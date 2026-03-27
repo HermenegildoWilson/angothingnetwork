@@ -17,22 +17,26 @@ import UpdateUserDto, {
   ResetPasswordDto,
   UpdatePasswordDto,
 } from './dto/update-user.dto';
+import { Public } from '../auth/decorators/public.decorator';
 
 @Controller('user')
 export class UserController {
   constructor(private readonly userService: UserService) {}
 
   @Post('register')
+  @Public()
   generateRegisterToken(@Body() data: GenerateRegisterTokenDto) {
     return this.userService.generateRegisterToken(data);
   }
 
   @Post('clearregistertoken')
+  @Public()
   clearRegisterToken(@Body() data: ClearRegisterTokenTokenDto) {
     return this.userService.clearRegisterToken(data);
   }
 
   @Post()
+  @Public()
   create(@Body() data: CreateUserDto) {
     return this.userService.create(data);
   }
@@ -70,11 +74,13 @@ export class UserController {
   }
 
   @Post('forgotpassword')
+  @Public()
   generatePasswordResetToken(@Body() data: GeneratePasswordResetTokenDto) {
     return this.userService.generatePasswordResetToken(data);
   }
 
   @Patch('resetpassword')
+  @Public()
   ResetPasswordDto(@Body() data: ResetPasswordDto) {
     return this.userService.resetPassword(data);
   }

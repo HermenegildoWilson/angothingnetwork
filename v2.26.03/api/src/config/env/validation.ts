@@ -19,6 +19,7 @@ export const envValidationSchema = Joi.object({
   JWT_REFRESH_SECRET: Joi.string().required(),
   JWT_ACCESS_IN: Joi.string().required(),
   JWT_REFRESH_IN: Joi.string().required(),
+  REFRESH_COOKIE_NAME: Joi.string().required(),
 
   // Mais Service
   MAIL_USER: Joi.string().email().required(),
