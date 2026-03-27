@@ -8,7 +8,9 @@ type AuthContextType = {
   appState: "loading" | "authenticated" | "unauthenticated";
   isAuthenticated: boolean;
   user: UserDto | null;
-  signIn: (data: SignInDto) => Promise<functionDefaultReturn<AuthResponse>>;
+  signIn: (
+    data: SignInDto["userFields"],
+  ) => Promise<functionDefaultReturn<AuthResponse>>;
   signOut: () => Promise<functionDefaultReturn<{ message: string }>>;
   refresh: () => Promise<functionDefaultReturn<AuthResponse>>;
 };

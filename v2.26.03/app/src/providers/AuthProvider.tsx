@@ -29,7 +29,7 @@ export function AuthProvider({ children }: AuthProviderProps) {
       appState,
       isAuthenticated,
       user,
-      signIn: async (data: SignInDto) => {
+      signIn: async (data: SignInDto["userFields"]) => {
         const result = await authService.signIn(data);
         if (result.success && result.data) {
           authStore.setSession({

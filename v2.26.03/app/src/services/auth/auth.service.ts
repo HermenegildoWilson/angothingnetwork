@@ -1,12 +1,17 @@
 import { api } from "@/config/api";
 import type { AuthResponse, SignInDto } from "./types";
 import type { functionDefaultReturn } from "@/types/functionDefaultReturn";
+import { buildWebDeviceDto } from "./device";
 
 const signIn = async (
-  data: SignInDto,
+  data: SignInDto["userFields"],
 ): Promise<functionDefaultReturn<AuthResponse>> => {
   try {
-    const response = await api.post<AuthResponse>("/auth/sigin", data);
+    const deviceDto = await buildWebDeviceDto();
+    const response = await api.post<AuthResponse>("/auth/signin", {
+      userFields: data,
+      deviceDto,
+    });
 
     return {
       success: true,
@@ -24,7 +29,7 @@ const signOut = async (): Promise<
   functionDefaultReturn<{ message: string }>
 > => {
   try {
-    const response = await api.post("/auth/sigout");
+    const response = await api.post("/auth/signout");
 
     return {
       success: true,

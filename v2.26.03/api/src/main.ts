@@ -34,6 +34,19 @@ async function bootstrap() {
     AppModule,
     new FastifyAdapter(),
   );
+  const env = app.get(EnvService);
+  const allowedOrigins = [env.appUrl].filter(Boolean);
+
+  app.enableCors({
+    origin: (origin, callback) => {
+      if (!origin) return callback(null, true);
+      if (allowedOrigins.includes(origin)) return callback(null, true);
+      return callback(new Error('Not allowed by CORS'), false);
+    },
+    credentials: true,
+    methods: ['GET', 'POST', 'PUT', 'PATCH', 'DELETE', 'OPTIONS'],
+    allowedHeaders: ['Content-Type', 'Authorization'],
+  });
   await app.register(fastifyCookie);
   app.useGlobalPipes(
     new ValidationPipe({
@@ -52,7 +65,6 @@ async function bootstrap() {
       },
     }),
   );
-  const env = app.get(EnvService);
   await app.listen(env.apiPort, '0.0.0.0');
   console.log(`API running at ${env.apiUrl}`);
 }

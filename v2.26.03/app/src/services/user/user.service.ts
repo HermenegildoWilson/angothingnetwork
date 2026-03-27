@@ -5,8 +5,11 @@ import type {
   UpdateUserPasswordDto,
 } from "./types";
 import type CreateUserDto from "./types";
+import type { functionDefaultReturn } from "@/types/functionDefaultReturn";
 
-const generateRegisterToken = async (data: GenerateRegisterTokenDto) => {
+const generateRegisterToken = async (
+  data: GenerateRegisterTokenDto,
+): Promise<functionDefaultReturn<{ message?: "" }>> => {
   try {
     const response = await api.post("/user/register", data);
 
