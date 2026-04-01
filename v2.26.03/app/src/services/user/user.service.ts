@@ -1,4 +1,4 @@
-import { api } from "@/config/api";
+import { api } from "@/config/api/api";
 import type {
   GenerateRegisterTokenDto,
   UpdateUserDto,

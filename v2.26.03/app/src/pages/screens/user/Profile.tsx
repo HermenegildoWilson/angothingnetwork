@@ -1,17 +1,22 @@
+import { Avatar, Box, Card, Typography, Divider, Paper } from "@mui/material";
 import {
-  Avatar,
-  Box,
-  Card,
-  Typography,
-  Divider,
-  Paper,
-} from "@mui/material";
-import { User, Mail, Phone, Calendar, Shield, AtSign } from "lucide-react";
+  User,
+  Mail,
+  Phone,
+  Calendar,
+  Shield,
+  AtSign,
+  IdCard,
+} from "lucide-react";
 import type { UserDto } from "@/services/user/types";
 import MoreVertMenu from "@/components/modal/MoreVertMenu";
+import { useParams } from "react-router-dom";
+import { useEffect, useState } from "react";
+import { userService } from "@/services/user/user.service";
+import { useAuth } from "@/hooks/useAuth";
 
 const iconMapper = {
-  //   id: IdCard,
+  id: IdCard,
   name: User,
   email: Mail,
   phone: Phone,
@@ -20,8 +25,21 @@ const iconMapper = {
   createdAt: Calendar,
 };
 
-export default function Profife(props: { user: UserDto }) {
-  const { user } = props;
+export default function Profile() {
+  const { id } = useParams();
+  const { user } = useAuth();
+  const [profile, setProfile] = useState<UserDto>(user);
+
+  useEffect(() => {
+    const getProfile = async () => {
+      const response = await userService.find.one(id);
+      setProfile(response.data);
+    };
+
+    if (id) {
+      getProfile();
+    }
+  }, [id, user]);
 
   return (
     <Box
@@ -61,20 +79,20 @@ export default function Profife(props: { user: UserDto }) {
                 border: "4px solid white",
               }}
             >
-              {user.name[0]}
+              {profile.name[0]}
             </Avatar>
           </Box>
 
           <Divider sx={{ mx: 4, opacity: 0.6 }} />
 
           {/* Lista de Atributos */}
-          <Box sx={{ pt: 2, px: { xs: .5, md: 4 } }}>
-            {Object.keys(user).map((key) => {
+          <Box sx={{ pt: 2, px: { xs: 0.5, md: 4 } }}>
+            {Object.keys(profile).map((key) => {
               if (!(key in iconMapper)) return;
 
               return (
                 <Box mb={1}>
-                  <ProfileInfoItem label={key} value={user[key]} />
+                  <ProfileInfoItem label={key} value={profile[key]} />
                 </Box>
               );
             })}

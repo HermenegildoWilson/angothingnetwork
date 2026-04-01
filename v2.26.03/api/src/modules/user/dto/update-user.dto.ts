@@ -1,12 +1,18 @@
-import { PickType } from '@nestjs/mapped-types';
 import { IsEmail, IsOptional, IsString, Matches } from 'class-validator';
-import { GenerateRegisterTokenDto } from './create-user.dto';
 
-export default class UpdateUserDto extends PickType(GenerateRegisterTokenDto, [
-  'email',
-  'name',
-  'phone',
-]) {
+export default class UpdateUserDto {
+  @IsString({ message: 'O campo name deve ser uma string.' })
+  @IsOptional()
+  name?: string;
+
+  @IsEmail({}, { message: 'O campo email deve ser um email válido.' })
+  @IsOptional()
+  email?: string;
+
+  @IsString({ message: 'O campo phone deve ser uma string.' })
+  @IsOptional()
+  phone?: string;
+
   @IsString({ message: 'O campo username deve ser uma string.' })
   @IsOptional()
   username?: string;

@@ -13,7 +13,7 @@ import {
   AccountCircle,
   ArrowLeftSharp,
 } from "@mui/icons-material";
-import { Link, useNavigate } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 import { useAuth } from "@/hooks/useAuth";
 
 export default function Header({ open, toggleDrawer }) {
@@ -30,7 +30,6 @@ export default function Header({ open, toggleDrawer }) {
         {/* Ícone de abrir Drawer */}
         {open !== undefined && (
           <IconButton
-            color="inherit"
             aria-label="open drawer"
             onClick={toggleDrawer}
             edge="start"
@@ -55,26 +54,24 @@ export default function Header({ open, toggleDrawer }) {
         <Box sx={{ display: "flex" }}>
           {user ? (
             <>
-              <Link to={"/notificacoes"}>
-                <IconButton >
+              <IconButton onClick={() => navigate("/notifications")}>
+                <Tooltip title={"Notificações"}>
                   <NotificationsIcon />
-                </IconButton>
-              </Link>
-              <Link to={"/profife"}>
-                <IconButton >
+                </Tooltip>
+              </IconButton>
+              <IconButton onClick={() => navigate("/profile")}>
+                <Tooltip title={"Perfil"}>
                   <AccountCircle />
-                </IconButton>
-              </Link>
+                </Tooltip>
+              </IconButton>
             </>
           ) : (
-            <>
-              <Button
-                sx={{ backgroundColor: "white" }}
-                onClick={() => navigate("/signin")}
-              >
-                Entrar
-              </Button>
-            </>
+            <Button
+              sx={{ backgroundColor: "white" }}
+              onClick={() => navigate("/signin")}
+            >
+              Entrar
+            </Button>
           )}
         </Box>
       </Toolbar>

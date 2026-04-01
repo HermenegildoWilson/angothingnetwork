@@ -1,9 +1,9 @@
 import { useReducer } from "react";
 import type { ReactNode } from "react";
 
-import AppAlert from "../components/feedback/AppAlert";
+import AppAlert from "../components/feedback/alert/AppAlert";
 import { AlertContext } from "../context/AlertContext";
-import type { AlertAction, AlertState } from "@/types/alertTypes";
+import type { AlertAction, AlertState } from "@/components/feedback/alert/types";
 
 type AlertProviderProps = {
   children: ReactNode;

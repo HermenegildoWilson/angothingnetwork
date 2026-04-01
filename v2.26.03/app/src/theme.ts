@@ -16,8 +16,15 @@ const theme = createTheme({
   components: {
     MuiButton: {
       styleOverrides: {
-        root: {        
+        root: {
           textTransform: "none",
+        },
+      },
+    },
+    MuiIconButton: {
+      styleOverrides: {
+        root: {
+          color: "inherit",
         },
       },
     },

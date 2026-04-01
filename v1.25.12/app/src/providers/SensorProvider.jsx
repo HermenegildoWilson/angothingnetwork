@@ -9,8 +9,6 @@ const initialState = {
 };
 
 function sensorReducer(state, action) {
-  console.log("🧠 Reducer UPDATE_SENSOR:", action.type);
-
   switch (action.type) {
     case "INIT_SENSORS":
       return {

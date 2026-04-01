@@ -2,12 +2,14 @@ import CircularProgress, {
   type CircularProgressProps,
 } from "@mui/material/CircularProgress";
 
-type AppLoaderProps = CircularProgressProps & {
+type AppCircularLoaderProps = CircularProgressProps & {
   type?: string;
 };
 
-export default function AppLoader(appLoaderProps: AppLoaderProps) {
-  const { type, sx } = appLoaderProps;
+export default function AppCircularLoader(
+  appCircularLoaderProps: AppCircularLoaderProps,
+) {
+  const { type, sx } = appCircularLoaderProps;
 
   if (type === "small") {
     return (

@@ -16,7 +16,7 @@ import { useAuth } from "@/hooks/useAuth";
 import FormFields from "@/components/form/FormFields";
 import type { SignInDto } from "@/services/auth/types";
 import type { StyledInputProps } from "@/components/form/types";
-import AppLoader from "@/components/feedback/AppLoader";
+import AppLoader from "@/components/feedback/loader/AppCircularLoader";
 import Title from "@/components/ui/Title";
 import { STATUS } from "@/constants/status";
 export default function SignIn() {

@@ -14,6 +14,7 @@ async function bootstrap() {
   const env = await setupApp(app);
   await app.listen(env.apiPort, '0.0.0.0');
   console.log(`API running at ${env.apiUrl}`);
+  console.log(`APP running at ${env.appUrl}`);
 }
 
 bootstrap().catch((err) => {

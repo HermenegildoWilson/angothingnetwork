@@ -10,12 +10,16 @@ import SignUp from "@/pages/public/SignUp";
 import SignOut from "@/pages/public/SignOut";
 import VerifyEmail from "@/pages/public/VerifyEmail";
 import ValidateSignUp from "@/pages/public/ValidateSignUp";
-import Main from "@/pages/screens";
-import Profife from "@/pages/screens/Perfil";
-import { useAuth } from "@/hooks/useAuth";
+import Main from "@/pages/screens/Index";
+import Devices from "@/pages/screens/Devices/Devices";
+import Users from "@/pages/screens/user/Users";
+import Profile from "@/pages/screens/user/Profile";
+import Device from "@/pages/screens/Devices/Device";
+import Notifications from "@/pages/screens/Notifications/Notifications";
+import Dashboard from "@/pages/screens/Dashboard/Dashboard";
+import History from "@/pages/screens/Dashboard/History";
 
-export default function AppRoutes() {
-  const { user } = useAuth();
+export default function AppRoutes() {  
 
   return (
     <Routes>
@@ -25,7 +29,18 @@ export default function AppRoutes() {
          */}
         <Route element={<ProtectedRoute />}>
           <Route path="/" element={<Main />} />
-          <Route path="/profife" element={<Profife user={user} />} />
+          <Route path="/dashboard" element={<Dashboard />} />
+          <Route path="/history" element={<History />} />
+
+          <Route path="/users" element={<Users />} />
+          <Route path="/profile" element={<Profile />} />
+          <Route path="/profile/:id" element={<Profile />} />
+
+          <Route path="/devices" element={<Devices />} />
+          <Route path="/devices/:id" element={<Device />} />
+          
+          <Route path="/notifications" element={<Notifications />} />
+
           <Route path="*" element={<NotFound />} />
         </Route>
 

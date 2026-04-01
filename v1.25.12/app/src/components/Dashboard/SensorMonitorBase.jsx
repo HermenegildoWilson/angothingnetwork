@@ -281,7 +281,7 @@ export default function SensorMonitorBase({
               {Number(actualReading?.[activeParam]) >= config.warning_value ? (
                 <Chip
                   icon={<WarningAmber />}
-                  label="Nível Elevado"
+                  label="<Nível Elevado"
                   color="warning"
                   size="small"
                   sx={{ fontWeight: "bold" }}
@@ -289,7 +289,7 @@ export default function SensorMonitorBase({
               ) : (
                 <Chip
                   icon={<Verified />}
-                  label="Nível Normal"
+                  label="<Nível Normal"
                   color="success"
                   size="small"
                   sx={{ fontWeight: "bold" }}

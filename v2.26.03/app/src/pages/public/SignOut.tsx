@@ -3,7 +3,7 @@ import { useAlert } from "../../hooks/useAlert";
 import { useAuth } from "../../hooks/useAuth";
 import { Box } from "@mui/material";
 import Text from "@/components/ui/Text";
-import AppLoader from "@/components/feedback/AppLoader";
+import AppLoader from "@/components/feedback/loader/AppCircularLoader";
 import { Navigate } from "react-router-dom";
 import { STATUS } from "@/constants/status";
 

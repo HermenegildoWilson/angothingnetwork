@@ -152,7 +152,7 @@ export class UserService {
   }
 
   update(params: { where: Prisma.UserWhereUniqueInput; data: UpdateUserDto }) {
-    return this.prisma.user.update(params);
+    return this.prisma.user.update({ ...params, omit: { passwordHash: true } });
   }
 
   updatePassword(params: {

@@ -5,6 +5,7 @@ import AppRoutes from "@/routes/AppRoutes";
 import theme from "@/theme";
 import { AlertProvider } from "@/providers/AlertProvider";
 import { AuthProvider } from "@/providers/AuthProvider";
+import AuthenticatedProviders from "./providers/AuthenticatedProviders";
 
 export default function App() {
   return (
@@ -12,9 +13,11 @@ export default function App() {
       <CssBaseline />
       <AlertProvider>
         <AuthProvider>
-          <BrowserRouter>
-            <AppRoutes />
-          </BrowserRouter>
+          <AuthenticatedProviders>
+            <BrowserRouter>
+              <AppRoutes />
+            </BrowserRouter>
+          </AuthenticatedProviders>
         </AuthProvider>
       </AlertProvider>
     </ThemeProvider>

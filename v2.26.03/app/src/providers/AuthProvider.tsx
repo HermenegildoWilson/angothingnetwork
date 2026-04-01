@@ -2,13 +2,13 @@ import { useEffect, useMemo, useState } from "react";
 import type { ReactNode } from "react";
 
 import { AuthContext } from "@/context/AuthContext";
-import { api } from "@/config/api";
+import { api } from "@/config/api/api";
 import { setupAuthInterceptors } from "@/services/auth/auth.interceptors";
 import { authService } from "@/services/auth/auth.service";
 import { authStore } from "@/services/auth/auth.store";
 import type { UserDto } from "@/services/user/types";
 import type { SignInDto } from "@/services/auth/types";
-import { Container, Typography } from "@mui/material";
+import FullLoader from "@/components/feedback/loader/FullLoader";
 
 type AuthProviderProps = {
   children: ReactNode;
@@ -96,13 +96,7 @@ export function AuthProvider({ children }: AuthProviderProps) {
   }, []);
 
   if (appState === "loading") {
-    return (
-      <Container>
-        <Typography variant="body1" sx={{ marginTop: 45, opacity: 1 }}>
-          Carregando aplicação...
-        </Typography>
-      </Container>
-    );
+    return <FullLoader />;
   }
 
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;

@@ -1,10 +1,29 @@
-import { api } from "@/config/api";
-import type CreateSensorDto from "./types";
-import type { UpdateSensorDto } from "./types";
+import { api } from "@/config/api/api";
+import type {
+  UpdateSensorDto,
+  CreateSensorDto,
+  AllocateSensorDto,
+} from "./types";
 
 const create = async (data: CreateSensorDto) => {
   try {
     const response = await api.post("/sensor", data);
+
+    return {
+      success: true,
+      data: response.data,
+    };
+  } catch (error) {
+    return {
+      success: false,
+      ...(error.response?.data || error),
+    };
+  }
+};
+
+const allocate = async (data: AllocateSensorDto) => {
+  try {
+    const response = await api.post("/sensor/allocate", data);
 
     return {
       success: true,
@@ -68,8 +87,25 @@ const update = async (props: { id: string; data: UpdateSensorDto }) => {
   }
 };
 
+const remove = async (id: string) => {
+  try {
+    const response = await api.delete(`/sensor/${id}`);
+
+    return {
+      success: true,
+      data: response.data,
+    };
+  } catch (error) {
+    return {
+      success: false,
+      ...(error.response?.data || error),
+    };
+  }
+};
 export const sensorService = {
   create,
   find,
   update,
+  delete: remove,
+  allocate,
 };

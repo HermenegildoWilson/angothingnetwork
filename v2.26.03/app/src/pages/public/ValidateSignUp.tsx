@@ -1,4 +1,4 @@
-import AppLoader from "@/components/feedback/AppLoader";
+import AppLoader from "@/components/feedback/loader/AppCircularLoader";
 import BackgroundBlobs from "@/components/ui/BackgroundBlobs";
 import PulseIcon from "@/components/ui/PulseIcon";
 import Text from "@/components/ui/Text";
@@ -106,7 +106,7 @@ export default function ValidateSignUp() {
         }}
       >
         <PulseIcon>
-          <AppLoader />
+          <AppLoader sx={{ color: "#ffffff" }} />
         </PulseIcon>
 
         <Title>Validando sua conta</Title>

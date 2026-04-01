@@ -1,4 +1,4 @@
-import { api } from "@/config/api";
+import { api } from "@/config/api/api";
 import type { AuthResponse, SignInDto } from "./types";
 import type { functionDefaultReturn } from "@/types/functionDefaultReturn";
 import { buildWebDeviceDto } from "./device";

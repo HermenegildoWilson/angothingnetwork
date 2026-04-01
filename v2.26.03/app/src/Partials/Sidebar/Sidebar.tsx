@@ -27,7 +27,10 @@ function ListItemsMenu({
     <List>
       {opcoesMenu.map((item) => {
         // === CONTROLE DO ESTADO DE ACTIVAÇÃO DA OPÇÃO DO MENU
-        const active = location.pathname === item.path;
+        const active =
+          item.path === "/"
+            ? location.pathname === item.path
+            : location.pathname.includes(item.path);
 
         return (
           <ListItem key={item.text} disablePadding sx={{ display: "block" }}>

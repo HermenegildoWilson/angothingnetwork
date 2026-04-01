@@ -7,9 +7,8 @@ export default function Title(typographyProps: TypographyProps) {
       variant={"h5"}
       fontWeight={700}
       sx={{
-        fontSize: { xs: "1.4rem", md: "2rem" },
-        color: "text.primary",
-        mb: 2,
+        fontSize: { xs: "1.5rem", md: "2rem" },
+        color: "text.primary",        
         ...sx,
       }}
       {...typographyProps}

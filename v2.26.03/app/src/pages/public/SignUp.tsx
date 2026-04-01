@@ -23,7 +23,7 @@ import { useAlert } from "@/hooks/useAlert";
 import type { GenerateRegisterTokenDto } from "@/services/user/types";
 import { userService } from "@/services/user/user.service";
 import type { StyledInputProps } from "@/components/form/types";
-import AppLoader from "@/components/feedback/AppLoader";
+import AppLoader from "@/components/feedback/loader/AppCircularLoader";
 import Title from "@/components/ui/Title";
 import { STATUS } from "@/constants/status";
 
