@@ -78,6 +78,9 @@ export default function SensorsReadingProvider({ children }) {
     [user?.id],
   );
 
+  console.log(sensorData);
+  
+
   return (
     <SensorReadingContext.Provider
       value={{

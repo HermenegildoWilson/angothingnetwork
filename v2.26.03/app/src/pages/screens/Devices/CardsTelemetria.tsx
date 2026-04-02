@@ -11,62 +11,63 @@ import {
 import parameterOptions from "@/config/sensor/parameterOptions";
 import type { parameterOptionsField } from "@/config/sensor/types";
 import { ArrowDownward, ArrowUpward } from "@mui/icons-material";
+import { useState } from "react";
+import type { SensorReadingDto } from "@/services/sensor/types";
+import { useSensorsReading } from "@/hooks/useSensors";
 
-const actualReading = {
-  Temperatura: 10,
-  "Qualidade do Ar": 10,
-  Humidade: 10,
-  "Pressão do Ar": 10,
-};
 // KPIs rápidas
-const stats = [
-  "Temperatura",
-  "Qualidade do Ar",
-  "Humidade",
-  "Pressão do Ar",
-].map((key: parameterOptionsField) => {
-  const formatReading = (value, unit) => {
-    if (value === null || value === undefined || value === "") return "--";
-    const numericValue = Number(value);
-    const displayValue = Number.isNaN(numericValue)
-      ? String(value)
-      : numericValue.toLocaleString("pt-PT", {
-          maximumFractionDigits: 2,
-        });
-    return unit ? `${displayValue}${unit}` : displayValue;
-  };
+const stats = (actualReading: SensorReadingDto) =>
+  ["Temperatura", "Qualidade do Ar", "Humidade", "Pressão do Ar"].map(
+    (key: parameterOptionsField) => {
+      const formatReading = (value, unit) => {
+        if (value === null || value === undefined || value === "") return "--";
+        const numericValue = Number(value);
+        const displayValue = Number.isNaN(numericValue)
+          ? String(value)
+          : numericValue.toLocaleString("pt-PT", {
+              maximumFractionDigits: 2,
+            });
+        return unit ? `${displayValue}${unit}` : displayValue;
+      };
 
-  const config = parameterOptions[key];
-  const changes = {
-    Temperatura: Number(0.2),
-    Humidade: Number(2),
-    "Qualidade do Ar": Number(-5),
-    "Pressão do Ar": Number(0),
-  };
-  const change = {
-    change: changes[key] >= 0 ? `+${changes[key]}` : `${changes[key]}`,
-    changeColor: changes[key] >= 0 ? "#10b981" : "#ef4444",
-    ChangeIcon:
-      changes[key] >= 0 ? (
-        <ArrowUpward sx={{ fontSize: 14, color: "#10b981" }} />
-      ) : (
-        <ArrowDownward sx={{ fontSize: 14, color: "#ef4444" }} />
-      ),
-  };
-  const value = actualReading?.[key];
+      const config = parameterOptions[key];
+      const changes = {
+        Temperatura: Number(0.2),
+        Humidade: Number(2),
+        "Qualidade do Ar": Number(-5),
+        "Pressão do Ar": Number(0),
+      };
+      const change = {
+        change: changes[key] >= 0 ? `+${changes[key]}` : `${changes[key]}`,
+        changeColor: changes[key] >= 0 ? "#10b981" : "#ef4444",
+        ChangeIcon:
+          changes[key] >= 0 ? (
+            <ArrowUpward sx={{ fontSize: 14, color: "#10b981" }} />
+          ) : (
+            <ArrowDownward sx={{ fontSize: 14, color: "#ef4444" }} />
+          ),
+      };
 
-  return {
-    title: config?.name,
-    value: formatReading(value, config.unit),
-    ...change,
-    status: value >= config.warning_value ? "Nível Elevado" : "Nível Normal",
-    statusColor: value >= config.warning_value ? "#ef4444" : "#10b981",
-    Icon: config.Icon,
-    color: config.color,
-  };
-});
+      const value = actualReading?.[config.field];
+
+      return {
+        title: config?.name,
+        value: formatReading(value, config.unit),
+        ...change,
+        status:
+          value >= config.warning_value ? "Nível Elevado" : "Nível Normal",
+        statusColor: value >= config.warning_value ? "#ef4444" : "#10b981",
+        Icon: config.Icon,
+        color: config.color,
+      };
+    },
+  );
 
 export default function CardsTelemetria(props: { boxProps?: BoxProps }) {
+  const { SensorReadingDto } = useSensorsReading();
+  //setActualReading
+  const [actualReading] = useState<SensorReadingDto>(SensorReadingDto?.[0]);
+
   return (
     <Box
       sx={{
@@ -81,7 +82,7 @@ export default function CardsTelemetria(props: { boxProps?: BoxProps }) {
         ...props.boxProps?.sx,
       }}
     >
-      {stats.map((stat, i) => (
+      {stats(actualReading).map((stat, i) => (
         <Box key={i}>
           <Card
             sx={{

@@ -1,6 +1,10 @@
 import type { Thermostat } from "@mui/icons-material";
 
-export type parameterOptionsField = "Temperatura" | "Humidade" | "Pressão do Ar" | "Qualidade do Ar"
+export type parameterOptionsField =
+  | "Temperatura"
+  | "Humidade"
+  | "Pressão do Ar"
+  | "Qualidade do Ar";
 
 export type parameterOptionsDto = {
   Temperatura: parameterOptionsPayload;

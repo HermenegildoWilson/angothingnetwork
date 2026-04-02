@@ -41,7 +41,7 @@ export const initialSensorReading = [
     humidity: 0,
     pressure: 0,
     air_quality: 0,
-    timestamp: undefined,
+    timestamp: null,
   },
 ];
 
@@ -52,6 +52,8 @@ export function sensorReadingReducer(
     reading: { new?: SensorReadingDto; init?: SensorReadingDto[] };
   },
 ) {
+  console.log(state);
+  
   switch (action.type) {
     case "INIT_SENSORS_READING":
       return action.reading.init;

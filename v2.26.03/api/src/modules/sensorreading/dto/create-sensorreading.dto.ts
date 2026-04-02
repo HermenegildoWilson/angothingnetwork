@@ -1,5 +1,11 @@
 import { Type } from 'class-transformer';
-import { IsDate, IsNotEmpty, IsNumber, IsString } from 'class-validator';
+import {
+  IsDate,
+  IsNotEmpty,
+  IsNumber,
+  IsOptional,
+  IsString,
+} from 'class-validator';
 
 export default class CreateSensorReadingDto {
   @IsString({ message: 'O campo sensorCode deve ser uma string.' })
@@ -23,5 +29,6 @@ export default class CreateSensorReadingDto {
   air_quality!: number;
 
   @IsDate()
+  @IsOptional()
   timestamp?: Date;
 }

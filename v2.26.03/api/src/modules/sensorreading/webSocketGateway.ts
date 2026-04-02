@@ -52,6 +52,7 @@ export class SensorsGateway
     }
 
     const initialReadings = await this.redis.getSensorStates(sensorIds);
+
     if (initialReadings.length > 0) {
       client.emit('sensor:init', initialReadings);
     }
