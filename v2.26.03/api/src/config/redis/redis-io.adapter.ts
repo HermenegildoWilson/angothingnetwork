@@ -34,7 +34,6 @@ export class RedisIoAdapter extends IoAdapter {
     await Promise.all([this.pubClient.connect(), this.subClient.connect()]);
     this.adapterConstructor = createAdapter(this.pubClient, this.subClient);
     this.logger.log('Redis adapter conectado');
-    console.log('Redis adapter conectado');
   }
 
   async close() {
