@@ -1,0 +1,307 @@
+<html lang='pt-BR'>
+  <head>
+    <meta charset='UTF-8' />
+    <meta name='viewport' content='width=device-width, initial-scale=1.0' />
+    <title>{{subject}}</title>
+    <!--[if mso]>
+      <noscript>
+        <xml>
+          <o:OfficeDocumentSettings>
+            <o:PixelsPerInch>96</o:PixelsPerInch>
+          </o:OfficeDocumentSettings>
+        </xml>
+      </noscript>
+    <![endif]-->
+    <style>
+      body {
+        margin: 0;
+        padding: 0;
+        width: 100% !important;
+        -webkit-text-size-adjust: 100%;
+        -ms-text-size-adjust: 100%;
+      }
+      table,
+      td {
+        border-collapse: collapse;
+        mso-table-lspace: 0pt;
+        mso-table-rspace: 0pt;
+      }
+      img {
+        border: 0;
+        height: auto;
+        line-height: 100%;
+        outline: none;
+        text-decoration: none;
+        -ms-interpolation-mode: bicubic;
+      }
+    </style>
+  </head>
+  <body
+    style='
+      background-color: #f8fafc;
+      font-family:
+        -apple-system, BlinkMacSystemFont, &quot;Segoe UI&quot;, Roboto,
+        Helvetica, Arial, sans-serif;
+      margin: 0;
+      padding: 0;
+    '
+  >
+    <table
+      width='100%'
+      border='0'
+      cellspacing='0'
+      cellpadding='0'
+      bgcolor='#f8fafc'
+    >
+      <tr>
+        <td align='center' style='padding: 40px 20px'>
+          <!-- Main Container -->
+          <table
+            width='100%'
+            border='0'
+            cellspacing='0'
+            cellpadding='0'
+            style='
+              max-width: 540px;
+              background-color: #ffffff;
+              border-radius: 24px;
+              box-shadow:
+                0 4px 6px -1px rgba(0, 0, 0, 0.05),
+                0 10px 15px -3px rgba(0, 0, 0, 0.03);
+            '
+          >
+            <!-- Branding Header -->
+            <tr>
+              <td align='center' style='padding: 48px 40px 32px 40px'>
+                <div
+                  style='
+                    background-color: #fef2f2;
+                    width: 64px;
+                    height: 64px;
+                    border-radius: 16px;
+                    display: inline-block;
+                    text-align: center;
+                    line-height: 64px;
+                  '
+                >
+                  <span style='font-size: 32px'>🛡️</span>
+                </div>
+                <h1
+                  style='
+                    margin: 24px 0 0 0;
+                    font-size: 24px;
+                    color: #0f172a;
+                    font-weight: 800;
+                    letter-spacing: -0.025em;
+                    line-height: 32px;
+                  '
+                >
+                  {{title}}
+                </h1>
+              </td>
+            </tr>
+
+            <!-- Content Body -->
+            <tr>
+              <td style='padding: 0 48px 24px 48px; text-align: center'>
+                <p
+                  style='
+                    margin: 0 0 16px 0;
+                    font-size: 16px;
+                    color: #475569;
+                    line-height: 24px;
+                  '
+                >
+                  Olá,
+                  <strong style='color: #1e293b'>{{nome}}</strong>.
+                </p>
+                <p
+                  style='
+                    margin: 0;
+                    font-size: 16px;
+                    color: #64748b;
+                    line-height: 26px;
+                  '
+                >
+                  {{message}}
+                </p>
+              </td>
+            </tr>
+
+            <!-- Device Info Box -->
+            <tr>
+              <td style='padding: 0 48px 32px 48px'>
+                <table
+                  width='100%'
+                  border='0'
+                  cellspacing='0'
+                  cellpadding='0'
+                  style='
+                    background-color: #f8fafc;
+                    border-radius: 16px;
+                    border: 1px solid #f1f5f9;
+                  '
+                >
+                  <tr>
+                    <td style='padding: 24px'>
+                      <table
+                        width='100%'
+                        border='0'
+                        cellspacing='0'
+                        cellpadding='0'
+                      >
+                        <tr>
+                          <td
+                            style='
+                              padding-bottom: 12px;
+                              font-size: 13px;
+                              color: #94a3b8;
+                              text-transform: uppercase;
+                              font-weight: 700;
+                              letter-spacing: 0.05em;
+                            '
+                          >
+                            Detalhes do Acesso
+                          </td>
+                        </tr>
+                        <tr>
+                          <td
+                            style='
+                              font-size: 14px;
+                              color: #334155;
+                              line-height: 22px;
+                            '
+                          >
+                            <div style='margin-bottom: 8px'>
+                              <strong>📱 Dispositivo:</strong>
+                              {{deviceInfo.brand}}
+                              {{deviceInfo.model}}
+                            </div>
+                            <div style='margin-bottom: 8px'>
+                              <strong>🌐 Navegador:</strong>
+                              {{deviceInfo.browser}}
+                              ({{deviceInfo.os}})
+                            </div>
+                            <div style='margin-bottom: 8px'>
+                              <strong>🕒 Data:</strong>
+                              {{deviceInfo.date}}
+                            </div>
+                            <div style='margin-bottom: 8px'>
+                              <strong>📍 Local:</strong>
+                              {{deviceInfo.city}},
+                              {{deviceInfo.country}}
+                            </div>
+                            <div>
+                              <strong>🔐 IP:</strong>
+                              {{deviceInfo.ipAddress}}
+                            </div>
+                          </td>
+                        </tr>
+                      </table>
+                    </td>
+                  </tr>
+                </table>
+              </td>
+            </tr>
+
+            <!-- Warning Text -->
+            <tr>
+              <td style='padding: 0 48px 32px 48px; text-align: center'>
+                <p
+                  style='
+                    margin: 0;
+                    font-size: 14px;
+                    color: #b91c1c;
+                    font-weight: 500;
+                    line-height: 22px;
+                  '
+                >
+                  Se você não reconhece esta atividade, recomendamos alterar
+                  imediatamente a sua senha e encerrar sessões ativas para
+                  proteger seus dados.
+                </p>
+              </td>
+            </tr>
+
+            <!-- Primary Action Button -->
+            <tr>
+              <td align='center' style='padding: 0 48px 48px 48px'>
+                <a
+                  href='{{url}}'
+                  target='_blank'
+                  style='
+                    background-color: #dc2626;
+                    color: #ffffff;
+                    display: inline-block;
+                    padding: 18px 42px;
+                    border-radius: 14px;
+                    text-decoration: none;
+                    font-size: 16px;
+                    font-weight: 600;
+                    transition: all 0.2s ease;
+                  '
+                >
+                  Verificar Dispositivos
+                </a>
+              </td>
+            </tr>
+
+            <!-- Fallback link -->
+            <tr>
+              <td align='center' style='padding: 0 40px 30px 40px'></td>
+            </tr>
+
+            <!-- Footer Branding -->
+            <tr>
+              <td
+                align='center'
+                style='
+                  padding: 32px 48px 48px 48px;
+                  border-top: 1px solid #f1f5f9;
+                '
+              >
+                <img
+                  src='https://github.com/Coreondev.png'
+                  alt='Coreon'
+                  width='48'
+                  style='
+                    border-radius: 10px;
+                    margin-bottom: 16px;
+                    filter: grayscale(100%);
+                    opacity: 0.7;
+                  '
+                />
+                <p
+                  style='
+                    margin: 0;
+                    font-size: 12px;
+                    color: #94a3b8;
+                    line-height: 20px;
+                  '
+                >
+                  Este é um e-mail automático de segurança. Por favor, não
+                  responda.<br />
+                  Sua segurança é nossa prioridade.
+                </p>
+                <p
+                  style='
+                    margin: 24px 0 0 0;
+                    font-size: 11px;
+                    color: #cbd5e1;
+                    font-weight: 500;
+                    letter-spacing: 0.02em;
+                  '
+                >
+                  ©
+                  {{year}}
+                  Coreon. &bull; Todos os direitos reservados.
+                </p>
+              </td>
+            </tr>
+          </table>
+          <!-- End Main Container -->
+        </td>
+      </tr>
+    </table>
+  </body>
+</html>
