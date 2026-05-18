@@ -27,11 +27,7 @@
       "@config/*": ["src/config/*"],
       "@common/*": ["src/common/*"],
       "@modules/*": ["src/modules/*"],
-      // "@auth/*": ["src/modules/auth/*"],
-      // "@user/*": ["src/modules/user/*"],
-      // "@academic/*": ["src/modules/academic/*"],
       "@prisma/*": ["src/generated/prisma/*"]
     },
   }
-  // "exclude": ["node_modules", "dist", "test", "prisma.config.ts"]
 }
