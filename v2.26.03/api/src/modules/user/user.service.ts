@@ -145,6 +145,10 @@ export class UserService {
       },
     });
 
+    if (role === 'ADMIN') {
+      await this.allocateAllSensorsToAdmin(createdUser.id);
+    }
+
     await this.prisma.pendingUser.deleteMany({
       where: { token },
     });
@@ -227,6 +231,25 @@ export class UserService {
   async hashPassword(password: string) {
     const saltRounds = 10;
     return await bcrypt.hash(password, saltRounds);
+  }
+
+  private async allocateAllSensorsToAdmin(userId: string) {
+    const sensors = await this.prisma.sensor.findMany({
+      where: { deletedAt: null },
+      select: { id: true },
+    });
+
+    if (sensors.length === 0) {
+      return { count: 0 };
+    }
+
+    return this.prisma.sensorAllocation.createMany({
+      data: sensors.map((sensor) => ({
+        sensorId: sensor.id,
+        userId,
+      })),
+      skipDuplicates: true,
+    });
   }
 
   private async generateUsername(name: string): Promise<string> {

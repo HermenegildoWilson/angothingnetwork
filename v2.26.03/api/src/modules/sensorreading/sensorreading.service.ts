@@ -90,9 +90,11 @@ export class SensorreadingService {
     if (filters.user?.role !== 'ADMIN') {
       where.sensor = {
         ...(where.sensor as Prisma.SensorWhereInput | undefined),
-        sensorAllocation: {
-          userId: filters.user?.id,
-          deletedAt: null,
+        sensorAllocations: {
+          some: {
+            userId: filters.user?.id,
+            deletedAt: null,
+          },
         },
       };
     }

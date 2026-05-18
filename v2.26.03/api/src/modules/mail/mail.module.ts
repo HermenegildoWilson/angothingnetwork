@@ -12,9 +12,12 @@ import { EnvService } from '@/config/env/env.service';
       inject: [EnvService],
       useFactory: (env: EnvService) => ({
         transport: {
-          host: 'smtp.gmail.com',
-          port: 587,
-          secure: false,
+          host: env.mailHost,
+          port: env.mailPort,
+          secure: env.mailSecure,
+          connectionTimeout: env.mailConnectionTimeout,
+          greetingTimeout: env.mailConnectionTimeout,
+          socketTimeout: env.mailConnectionTimeout,
           auth: {
             user: env.mailUser,
             pass: env.mailPass,

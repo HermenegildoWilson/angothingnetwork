@@ -1,6 +1,8 @@
 export type SensorDto = {
   id: string;
   sensorCode: string;
+  createdAt?: string;
+  updatedAt?: string;
 };
 
 export type CreateSensorDto = {

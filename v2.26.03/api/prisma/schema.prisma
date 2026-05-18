@@ -8,7 +8,6 @@ datasource db {
   provider = "postgresql"
 }
 
-
 //Enums
 enum UserRole {
   ADMIN
@@ -65,18 +64,18 @@ model Token {
 }
 
 model Sensor {
-  id               String            @id @default(cuid())
-  sensorCode      String            @unique
-  createdAt        DateTime          @default(now())
-  updatedAt        DateTime          @updatedAt
-  deletedAt        DateTime?
-  sensorAllocation SensorAllocation?
-  sensorReadings   SensorReadings[]
+  id                String             @id @default(cuid())
+  sensorCode        String             @unique
+  createdAt         DateTime           @default(now())
+  updatedAt         DateTime           @updatedAt
+  deletedAt         DateTime?
+  sensorAllocations SensorAllocation[]
+  sensorReadings    SensorReadings[]
 }
 
 model SensorAllocation {
   id       String @id @default(cuid())
-  sensorId String @unique
+  sensorId String
   userId   String
   sensor   Sensor @relation(fields: [sensorId], references: [id], onDelete: Cascade)
   user     User   @relation(fields: [userId], references: [id], onDelete: Cascade)
@@ -84,6 +83,8 @@ model SensorAllocation {
   createdAt DateTime  @default(now())
   updatedAt DateTime  @updatedAt
   deletedAt DateTime?
+
+  @@unique([sensorId, userId])
 }
 
 model SensorReadings {

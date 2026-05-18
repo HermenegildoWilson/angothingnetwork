@@ -19,8 +19,8 @@ export class SensorController {
   constructor(private readonly sensorService: SensorService) {}
 
   @Post()
-  create(@Body() data: CreateSensorDto) {
-    return this.sensorService.create(data);
+  create(@Body() data: CreateSensorDto, @CurrentUser() user: AuthUserPayload) {
+    return this.sensorService.create(data, user);
   }
 
   @Post('allocate')
@@ -29,8 +29,8 @@ export class SensorController {
   }
 
   @Get()
-  findAll() {
-    return this.sensorService.findAll();
+  findAll(@CurrentUser() user: AuthUserPayload) {
+    return this.sensorService.findVisibleToUser(user);
   }
 
   @Get('me/list')
