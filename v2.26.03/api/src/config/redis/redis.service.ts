@@ -14,6 +14,7 @@ type RedisClient = ReturnType<typeof createClient>;
 export class RedisService implements OnModuleInit, OnModuleDestroy {
   private readonly logger = new Logger(RedisService.name);
   private readonly client: RedisClient;
+  private connected = false;
 
   constructor(private readonly env: EnvService) {
     this.client = createClient({ url: this.env.redisUrl });
@@ -24,12 +25,23 @@ export class RedisService implements OnModuleInit, OnModuleDestroy {
   }
 
   async onModuleInit() {
-    await this.client.connect();
-    this.logger.log('Redis cache conectado');
+    try {
+      await this.client.connect();
+      this.connected = true;
+      this.logger.log('Redis cache conectado');
+    } catch (err) {
+      const message = err instanceof Error ? err.message : String(err);
+      this.connected = false;
+      this.logger.warn(
+        `Redis cache indisponível. Cache desativado: ${message}`,
+      );
+    }
   }
 
   async onModuleDestroy() {
-    await this.client.quit();
+    if (this.connected) {
+      await this.client.quit();
+    }
   }
 
   private buildSensorKey(sensorId: string) {
@@ -37,6 +49,7 @@ export class RedisService implements OnModuleInit, OnModuleDestroy {
   }
 
   async setSensorState(sensorId: string, payload: CreateSensorReadingDto) {
+    if (!this.connected) return;
     const key = this.buildSensorKey(sensorId);
     const data = {
       ...payload,
@@ -50,6 +63,7 @@ export class RedisService implements OnModuleInit, OnModuleDestroy {
   async getSensorState(
     sensorId: string,
   ): Promise<CreateSensorReadingDto | null> {
+    if (!this.connected) return null;
     const key = this.buildSensorKey(sensorId);
     const raw = await this.client.get(key);
     if (!raw) return null;
@@ -57,6 +71,7 @@ export class RedisService implements OnModuleInit, OnModuleDestroy {
   }
 
   async getSensorStates(sensorIds: string[]) {
+    if (!this.connected) return [] as CreateSensorReadingDto[];
     if (sensorIds.length === 0) return [] as CreateSensorReadingDto[];
     const keys = sensorIds.map((id) => this.buildSensorKey(id));
     const values = await this.client.mGet(keys);

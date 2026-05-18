@@ -34,6 +34,10 @@ export class EnvService {
     return this.config.get<string>('database.url')!;
   }
 
+  get adminEmail(): string {
+    return this.config.get<string>('admin.email')!;
+  }
+
   get mailUser(): string {
     return this.config.get<string>('mail.user')!;
   }

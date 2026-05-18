@@ -2,6 +2,8 @@ import {
   BadRequestException,
   ConflictException,
   Injectable,
+  NotFoundException,
+  UnauthorizedException,
 } from '@nestjs/common';
 import * as bcrypt from 'bcrypt';
 import CreateUserDto, {
@@ -14,10 +16,11 @@ import UpdateUserDto, {
   UpdatePasswordDto,
 } from './dto/update-user.dto';
 import { PrismaService } from '../prisma/prisma.service';
-import { Prisma } from '@/generated/prisma/client';
+import { Prisma, UserRole } from '@/generated/prisma/client';
 import { randomBytes } from 'crypto';
 import { TEN_MINUTES_IN_MS } from '@/common/utils/date';
 import { MailService } from '../mail/mail.service';
+import { EnvService } from '@/config/env/env.service';
 
 const toDbTimestamp = (date: Date) =>
   // Stores local wall-clock time into TIMESTAMP WITHOUT TZ.
@@ -29,6 +32,7 @@ export class UserService {
   constructor(
     private readonly prisma: PrismaService,
     private readonly mailService: MailService,
+    private readonly env: EnvService,
   ) {}
 
   async generateRegisterToken(
@@ -83,9 +87,8 @@ export class UserService {
       to: data.email,
       token,
     });
-    console.log('Email sent...');
 
-    const passwordHash = password; // Gerar hash
+    const passwordHash = await this.hashPassword(password);
     const username = await this.generateUsername(data.name);
     const expiresAt = toDbTimestamp(new Date(Date.now() + TEN_MINUTES_IN_MS));
 
@@ -98,6 +101,7 @@ export class UserService {
         passwordHash,
       },
     });
+
     return {
       message: `We sent an email with instructions on how to create your account. ${this.maskEmail(data.email)}.`,
     };
@@ -128,9 +132,14 @@ export class UserService {
 
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
     const { token: lol, createdAt, expiresAt, used, ...data } = pendingUser;
+    const role: UserRole =
+      data.email === this.env.adminEmail ? 'ADMIN' : 'VISITOR';
 
     const createdUser = await this.prisma.user.create({
-      data,
+      data: {
+        ...data,
+        role,
+      },
       omit: {
         passwordHash: true,
       },
@@ -155,19 +164,60 @@ export class UserService {
     return this.prisma.user.update({ ...params, omit: { passwordHash: true } });
   }
 
-  updatePassword(params: {
+  async updatePassword(params: {
     where: Prisma.UserWhereUniqueInput;
     data: UpdatePasswordDto;
   }) {
-    return this.prisma.user.update(params);
+    const { oldPassword, newPassword } = params.data;
+
+    if (!newPassword) {
+      throw new BadRequestException('A nova password é obrigatória.');
+    }
+
+    const user = await this.prisma.user.findUnique({ where: params.where });
+
+    if (!user) {
+      throw new NotFoundException('Utilizador não encontrado.');
+    }
+
+    if (oldPassword) {
+      const isBcryptHash = /^\$2[aby]\$/.test(user.passwordHash);
+      const oldPasswordIsValid = isBcryptHash
+        ? await bcrypt.compare(oldPassword, user.passwordHash)
+        : oldPassword === user.passwordHash;
+
+      if (!oldPasswordIsValid) {
+        throw new UnauthorizedException('Password atual inválida.');
+      }
+    }
+
+    return this.prisma.user.update({
+      where: params.where,
+      data: { passwordHash: await this.hashPassword(newPassword) },
+      omit: { passwordHash: true },
+    });
   }
 
   generatePasswordResetToken(data: GeneratePasswordResetTokenDto) {
-    console.log(data);
+    if (!data.email) {
+      throw new BadRequestException('O email é obrigatório.');
+    }
+
+    return {
+      message:
+        'Recuperação de password ainda não está ativa neste protótipo. Use login com uma conta de demonstração.',
+    };
   }
 
   resetPassword(data: ResetPasswordDto) {
-    console.log(data);
+    if (!data.token) {
+      throw new BadRequestException('O token é obrigatório.');
+    }
+
+    return {
+      message:
+        'Recuperação de password ainda não está ativa neste protótipo. Use login com uma conta de demonstração.',
+    };
   }
 
   remove(where: Prisma.UserWhereUniqueInput) {

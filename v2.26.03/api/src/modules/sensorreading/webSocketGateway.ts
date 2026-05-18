@@ -8,7 +8,7 @@ import {
   MessageBody,
 } from '@nestjs/websockets';
 import { Server, Socket } from 'socket.io';
-import { Injectable } from '@nestjs/common';
+import { Injectable, Logger } from '@nestjs/common';
 import CreateSensorReadingDto from './dto/create-sensorreading.dto';
 import { RedisService } from '@/config/redis/redis.service';
 
@@ -22,6 +22,8 @@ interface ClientMeta {
 export class SensorsGateway
   implements OnGatewayConnection, OnGatewayDisconnect
 {
+  private readonly logger = new Logger(SensorsGateway.name);
+
   @WebSocketServer()
   server: Server | undefined;
 
@@ -57,9 +59,10 @@ export class SensorsGateway
       client.emit('sensor:init', initialReadings);
     }
 
-    console.log(
-      `Cliente ${client.id} (userId=${userId ?? 'anon'}) entrou nas salas:`,
-      sensorIds.map((id) => `sensor:${id}`),
+    this.logger.log(
+      `Cliente ${client.id} (userId=${userId ?? 'anon'}) entrou nas salas: ${sensorIds
+        .map((id) => `sensor:${id}`)
+        .join(', ')}`,
     );
   }
 
@@ -73,7 +76,7 @@ export class SensorsGateway
       }
     }
     this.clients.delete(client.id);
-    console.log(`Cliente ${client.id} desconectado`);
+    this.logger.log(`Cliente ${client.id} desconectado`);
   }
 
   // Permite ao cliente subscrever/abandonar sensores em runtime

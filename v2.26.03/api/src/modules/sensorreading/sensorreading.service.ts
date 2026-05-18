@@ -1,4 +1,8 @@
-import { BadRequestException, Injectable } from '@nestjs/common';
+import {
+  BadRequestException,
+  Injectable,
+  NotFoundException,
+} from '@nestjs/common';
 import CreatesDto from './dto/create-sensorreading.dto';
 import { PrismaService } from '../prisma/prisma.service';
 import { SensorsGateway } from './webSocketGateway';
@@ -34,10 +38,7 @@ export class SensorreadingService {
   }
 
   // Chamado sempre que um sensor muda (via MQTT, polling, webhook, etc.)
-  async onSensorStateChange(
-    sensorId: string,
-    newState: CreatesDto,
-  ) {
+  async onSensorStateChange(sensorId: string, newState: CreatesDto) {
     // 1. Persiste no teu DB se necessário
     // await this.repo.save({ sensorId, state: newState });
 
@@ -50,19 +51,60 @@ export class SensorreadingService {
     return newState;
   }
 
-  findAll() {
-    return `This action returns all s`;
+  private toResponse(reading: {
+    sensor: { sensorCode: string };
+    temperature: number;
+    humidity: number;
+    pressure: number;
+    air_quality: number;
+    createdAt: Date;
+  }) {
+    return {
+      sensorCode: reading.sensor.sensorCode,
+      temperature: reading.temperature,
+      humidity: reading.humidity,
+      pressure: reading.pressure,
+      air_quality: reading.air_quality,
+      timestamp: reading.createdAt,
+    };
   }
 
-  findOne(id: number) {
-    return `This action returns a #${id} s`;
+  async findAll() {
+    const readings = await this.prisma.sensorReadings.findMany({
+      orderBy: { createdAt: 'desc' },
+      take: 100,
+      include: { sensor: { select: { sensorCode: true } } },
+    });
+
+    return readings.map((reading) => this.toResponse(reading)).reverse();
+  }
+
+  async findOne(id: string) {
+    const reading = await this.prisma.sensorReadings.findUnique({
+      where: { id },
+      include: { sensor: { select: { sensorCode: true } } },
+    });
+
+    if (!reading) {
+      throw new NotFoundException('Leitura não encontrada.');
+    }
+
+    return this.toResponse(reading);
   }
 
   update() {
-    return `This action updates s`;
+    throw new BadRequestException('Atualização de leituras não é suportada.');
   }
 
-  remove(id: number) {
-    return `This action removes a #${id} s`;
+  async remove(id: string) {
+    const result = await this.prisma.sensorReadings.deleteMany({
+      where: { id },
+    });
+
+    if (result.count === 0) {
+      throw new NotFoundException('Leitura não encontrada.');
+    }
+
+    return { message: 'Leitura removida com sucesso.' };
   }
 }

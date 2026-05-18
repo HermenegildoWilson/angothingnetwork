@@ -5,15 +5,23 @@ export const envValidationSchema = Joi.object({
   NODE_ENV: Joi.string().valid('development', 'production', 'test').required(),
   LOG_LEVEL: Joi.string().required(),
 
-  API_PORT: Joi.number().required(),
-  API_HOST: Joi.string().required(),
-  REDIS_URL: Joi.string().uri().required(),
+  API_PORT: Joi.number().optional(),
+  PORT: Joi.number().optional(),
+  API_HOST: Joi.string().optional(),
+  RENDER_EXTERNAL_URL: Joi.string().uri().optional(),
+  REDIS_URL: Joi.string().uri().optional(),
 
-  // Database (if needed in future)
-  DATABASE_URL: Joi.string().optional(),
+  // Database
+  DATABASE_URL: Joi.string().uri().required(),
+
+  // ADMIN
+  ADMIN_EMAIL: Joi.string().email().required(),
 
   // CORS | App Configuration
+  APP_HOST: Joi.string().optional(),
+  APP_PORT: Joi.number().optional(),
   APP_URL: Joi.string().uri().required(),
+  APP_DEEP_LINKING: Joi.string().uri().optional(),
 
   // Security
   JWT_ACCESS_SECRET: Joi.string().required(),

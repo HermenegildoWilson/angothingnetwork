@@ -26,7 +26,7 @@ export class SensorreadingController {
 
   @Get(':id')
   findOne(@Param('id') id: string) {
-    return this.sensorreadingService.findOne(+id);
+    return this.sensorreadingService.findOne(id);
   }
 
   @Patch(':id')
@@ -36,6 +36,6 @@ export class SensorreadingController {
 
   @Delete(':id')
   remove(@Param('id') id: string) {
-    return this.sensorreadingService.remove(+id);
+    return this.sensorreadingService.remove(id);
   }
 }

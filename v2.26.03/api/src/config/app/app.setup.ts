@@ -1,8 +1,11 @@
 import fastifyCookie from '@fastify/cookie';
+import { Logger } from '@nestjs/common';
 import type { NestFastifyApplication } from '@nestjs/platform-fastify';
 import { EnvService } from '../env/env.service';
 import { buildValidationPipe } from './validation';
 import { RedisIoAdapter } from '@/config/redis/redis-io.adapter';
+
+const logger = new Logger('AppSetup');
 
 export const setupApp = async (app: NestFastifyApplication) => {
   const env = app.get(EnvService);
@@ -11,7 +14,14 @@ export const setupApp = async (app: NestFastifyApplication) => {
 
   // Socket (Redis adapter)
   const redisIoAdapter = new RedisIoAdapter(app);
-  await redisIoAdapter.connectToRedis(env.redisUrl);
+  try {
+    await redisIoAdapter.connectToRedis(env.redisUrl);
+  } catch (err) {
+    const message = err instanceof Error ? err.message : String(err);
+    logger.warn(
+      `Redis indisponível para Socket.IO. Usando modo local: ${message}`,
+    );
+  }
   app.useWebSocketAdapter(redisIoAdapter);
 
   app.enableCors({
