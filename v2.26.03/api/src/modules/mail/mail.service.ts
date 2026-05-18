@@ -8,12 +8,21 @@ import { join } from 'path';
 import { EnvService } from '@/config/env/env.service';
 import DeviceDto from '../auth/dto/device.dto';
 
-type ResendPayload = {
-  from: string;
-  to: string | string[];
+type BrevoSender = {
+  email: string;
+  name: string;
+};
+
+type BrevoRecipient = {
+  email: string;
+};
+
+type BrevoPayload = {
+  sender: BrevoSender;
+  to: BrevoRecipient[];
   subject: string;
-  html?: string;
-  text?: string;
+  htmlContent?: string;
+  textContent?: string;
 };
 
 @Injectable()
@@ -35,11 +44,11 @@ export class MailService {
       year: new Date().getFullYear(),
     });
 
-    return this.sendResendEmail({
-      from: this.env.resendFrom,
-      to,
+    return this.sendBrevoEmail({
+      sender: this.getBrevoSender(),
+      to: this.getBrevoRecipients(to),
       subject,
-      html,
+      htmlContent: html,
     });
   }
 
@@ -115,21 +124,25 @@ export class MailService {
     subject: string,
     text: string,
   ): Promise<unknown> {
-    return this.sendResendEmail({
-      from: this.env.resendFrom,
-      to,
+    return this.sendBrevoEmail({
+      sender: this.getBrevoSender(),
+      to: this.getBrevoRecipients(to),
       subject,
-      text,
+      textContent: text,
     });
   }
 
-  private async sendResendEmail(payload: ResendPayload): Promise<unknown> {
-    const response = await fetch('https://api.resend.com/emails', {
+  private async sendBrevoEmail(payload: BrevoPayload): Promise<unknown> {
+    const apiKey = this.getBrevoApiKey();
+    const headers: Record<string, string> = {
+      accept: 'application/json',
+      'api-key': apiKey,
+      'Content-Type': 'application/json',
+    };
+
+    const response = await fetch('https://api.brevo.com/v3/smtp/email', {
       method: 'POST',
-      headers: {
-        Authorization: `Bearer ${this.env.resendApiKey}`,
-        'Content-Type': 'application/json',
-      },
+      headers,
       body: JSON.stringify(payload),
     });
 
@@ -139,7 +152,7 @@ export class MailService {
 
     if (!response.ok) {
       this.logger.error(
-        `Resend email failed: ${response.status} ${JSON.stringify(result)}`,
+        `Brevo email failed: ${response.status} ${JSON.stringify(result)}`,
       );
       throw new InternalServerErrorException(
         'Não foi possível enviar o email.',
@@ -147,6 +160,33 @@ export class MailService {
     }
 
     return result;
+  }
+
+  private getBrevoApiKey() {
+    const apiKey = this.env.brevoApiKey.trim();
+
+    if (apiKey.startsWith('xsmtpsib-')) {
+      this.logger.error(
+        'BREVO_API_KEY recebeu uma chave SMTP. Use uma API key v3 da Brevo, que normalmente começa por xkeysib-.',
+      );
+      throw new InternalServerErrorException(
+        'Configuração de email inválida: use uma API key v3 da Brevo, não uma chave SMTP.',
+      );
+    }
+
+    return apiKey;
+  }
+
+  private getBrevoSender(): BrevoSender {
+    return {
+      email: this.env.brevoSenderEmail,
+      name: this.env.brevoSenderName,
+    };
+  }
+
+  private getBrevoRecipients(to: string | string[]): BrevoRecipient[] {
+    const recipients = Array.isArray(to) ? to : [to];
+    return recipients.map((email) => ({ email }));
   }
 
   private renderTemplate(template: string, context: Record<string, unknown>) {

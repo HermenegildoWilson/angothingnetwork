@@ -41,9 +41,9 @@ export default () => {
     },
 
     mail: {
-      resendApiKey: process.env.RESEND_API_KEY,
-      resendFrom:
-        process.env.RESEND_FROM ?? 'Angothingnetwork <onboarding@resend.dev>',
+      brevoApiKey: process.env.BREVO_API_KEY,
+      brevoSenderEmail: process.env.BREVO_SENDER_EMAIL,
+      brevoSenderName: process.env.BREVO_SENDER_NAME ?? 'Angothingnetwork',
     },
 
     jwt: {

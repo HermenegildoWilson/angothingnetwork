@@ -30,6 +30,7 @@ export const envValidationSchema = Joi.object({
   JWT_REFRESH_IN: Joi.string().required(),
 
   // Mail Service
-  RESEND_API_KEY: Joi.string().required(),
-  RESEND_FROM: Joi.string().default('Angothingnetwork <onboarding@resend.dev>'),
+  BREVO_API_KEY: Joi.string().required(),
+  BREVO_SENDER_EMAIL: Joi.string().email().required(),
+  BREVO_SENDER_NAME: Joi.string().default('Angothingnetwork'),
 });

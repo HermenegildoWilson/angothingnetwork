@@ -38,12 +38,16 @@ export class EnvService {
     return this.config.get<string>('admin.email')!;
   }
 
-  get resendApiKey(): string {
-    return this.config.get<string>('mail.resendApiKey')!;
+  get brevoApiKey(): string {
+    return this.config.get<string>('mail.brevoApiKey')!;
   }
 
-  get resendFrom(): string {
-    return this.config.get<string>('mail.resendFrom')!;
+  get brevoSenderEmail(): string {
+    return this.config.get<string>('mail.brevoSenderEmail')!;
+  }
+
+  get brevoSenderName(): string {
+    return this.config.get<string>('mail.brevoSenderName')!;
   }
 
   get jwtAccessSecret(): string {

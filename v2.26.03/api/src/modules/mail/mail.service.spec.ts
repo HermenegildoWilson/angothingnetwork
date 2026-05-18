@@ -12,8 +12,9 @@ describe('MailService', () => {
         {
           provide: EnvService,
           useValue: {
-            resendApiKey: 'test_resend_api_key',
-            resendFrom: 'Angothingnetwork <onboarding@resend.dev>',
+            brevoApiKey: 'test_brevo_api_key',
+            brevoSenderEmail: 'noreply@example.com',
+            brevoSenderName: 'Angothingnetwork',
             appUrl: 'http://localhost:5173',
             apiUrl: 'http://localhost:3000',
           },
