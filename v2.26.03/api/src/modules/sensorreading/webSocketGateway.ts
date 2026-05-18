@@ -12,6 +12,10 @@ import { Injectable, Logger } from '@nestjs/common';
 import CreateSensorReadingDto from './dto/create-sensorreading.dto';
 import { RedisService } from '@/config/redis/redis.service';
 
+type SensorReadingState = Omit<CreateSensorReadingDto, 'timestamp'> & {
+  timestamp?: string | Date;
+};
+
 interface ClientMeta {
   sensorIds: string[];
   userId: string | null;
@@ -112,7 +116,7 @@ export class SensorsGateway
   }
 
   // Chamado pelo SensorService quando um sensor muda de estado
-  emitSensorUpdate(sensorId: string, payload: CreateSensorReadingDto) {
+  emitSensorUpdate(sensorId: string, payload: SensorReadingState) {
     this.server?.to(`sensor:${sensorId}`).emit('sensor:update', payload);
   }
 

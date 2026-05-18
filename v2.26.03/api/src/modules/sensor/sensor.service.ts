@@ -110,6 +110,36 @@ export class SensorService {
     });
   }
 
+  findAvailableForRequest(user: AuthUserPayload) {
+    const args: any = {
+      where: {
+        deletedAt: null,
+        sensorAllocations: {
+          none: {
+            userId: user.id,
+            deletedAt: null,
+          },
+        },
+      },
+      include: {
+        accessRequests: {
+          where: { userId: user.id },
+          select: {
+            id: true,
+            status: true,
+            createdAt: true,
+            decidedAt: true,
+          },
+          orderBy: { createdAt: 'desc' },
+          take: 1,
+        },
+      },
+      orderBy: { createdAt: 'asc' },
+    };
+
+    return this.prisma.sensor.findMany(args);
+  }
+
   findOne(args: Prisma.SensorFindUniqueArgs) {
     return this.prisma.sensor.findUnique(args);
   }

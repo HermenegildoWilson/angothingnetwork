@@ -9,6 +9,9 @@ import { EnvService } from '@/config/env/env.service';
 import CreateSensorReadingDto from '@/modules/sensorreading/dto/create-sensorreading.dto';
 
 type RedisClient = ReturnType<typeof createClient>;
+type SensorReadingState = Omit<CreateSensorReadingDto, 'timestamp'> & {
+  timestamp?: string | Date;
+};
 
 @Injectable()
 export class RedisService implements OnModuleInit, OnModuleDestroy {
@@ -48,7 +51,7 @@ export class RedisService implements OnModuleInit, OnModuleDestroy {
     return `sensor:last:${sensorId}`;
   }
 
-  async setSensorState(sensorId: string, payload: CreateSensorReadingDto) {
+  async setSensorState(sensorId: string, payload: SensorReadingState) {
     if (!this.connected) return;
     const key = this.buildSensorKey(sensorId);
     const data = {

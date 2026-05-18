@@ -24,6 +24,12 @@ export class SensorreadingController {
     return this.sensorreadingService.create(data);
   }
 
+  @Post('many')
+  @Public()
+  createMany(@Body() data: CreateSensorReadingDto[]) {
+    return this.sensorreadingService.createMany(data);
+  }
+
   @Get()
   findAll(
     @Query('sensorCode') sensorCode?: string,

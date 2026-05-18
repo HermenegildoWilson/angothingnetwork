@@ -3,6 +3,8 @@ export type SensorDto = {
   sensorCode: string;
   createdAt?: string;
   updatedAt?: string;
+  deletedAt?: string | null;
+  accessRequests?: SensorAccessRequestSummaryDto[];
 };
 
 export type CreateSensorDto = {
@@ -16,6 +18,31 @@ export type UpdateSensorDto = {
 export type AllocateSensorDto = {
   sensorId: string;
   userId: string;
+};
+
+export type SensorAccessRequestStatus = "PENDING" | "APPROVED" | "REJECTED";
+
+export type SensorAccessRequestSummaryDto = {
+  id: string;
+  status: SensorAccessRequestStatus;
+  createdAt?: string;
+  decidedAt?: string | null;
+};
+
+export type SensorAccessRequestDto = SensorAccessRequestSummaryDto & {
+  sensorId: string;
+  userId: string;
+  sensor: {
+    id: string;
+    sensorCode: string;
+  };
+  user: {
+    id: string;
+    name: string;
+    username: string;
+    email: string;
+    role: "ADMIN" | "CLIENT" | "VISITOR";
+  };
 };
 
 export type SensorReadingDto = {

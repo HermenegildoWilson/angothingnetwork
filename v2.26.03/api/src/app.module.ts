@@ -7,6 +7,7 @@ import { EnvModule } from './config/env/env.module';
 import { MailModule } from './modules/mail/mail.module';
 import { SensorreadingModule } from './modules/sensorreading/sensorreading.module';
 import { RedisModule } from './config/redis/redis.module';
+import { SensorAccessRequestModule } from './modules/sensor-access-request/sensor-access-request.module';
 
 @Module({
   imports: [
@@ -18,6 +19,7 @@ import { RedisModule } from './config/redis/redis.module';
     RedisModule,
     MailModule,
     SensorreadingModule,
+    SensorAccessRequestModule,
   ],
   controllers: [],
   providers: [],

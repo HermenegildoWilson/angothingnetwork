@@ -34,6 +34,7 @@ export const SidebarItems = {
     { text: "Home", path: "/", icon: HomeIcon },
     { text: "Dashboard", path: "/realtime", icon: Dashboard },
     { text: "Histórico", path: "/history", icon: History },
+    { text: "Dispositivos", path: "/devices", icon: Cpu },
     { text: "Notificações", path: "/notifications", icon: Notifications },
     { text: "Perfil", path: "/profile", icon: AccountCircle },
     { text: "Sair", path: "/signout", icon: Logout },

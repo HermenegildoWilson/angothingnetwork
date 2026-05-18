@@ -8,6 +8,7 @@ import {
   Typography,
 } from "@mui/material";
 
+import { useEffect, useState } from "react";
 import Text from "@/components/ui/Text";
 import Title from "@/components/ui/Title";
 import { useAuth } from "@/hooks/useAuth";
@@ -15,24 +16,38 @@ import { Grass, Person } from "@mui/icons-material";
 import { Cpu } from "lucide-react";
 import TemporalCards from "../../components/Dashboard/TemporalCards";
 import { useNavigate } from "react-router-dom";
-
-// Lista de sensores disponíveis/solicitados
-const stations = [
-  {
-    id: 2,
-    name: "Monitoramento Ambiental, Uíge",
-    type: "Solo",
-    color: "#10b981",
-    Icone: Grass,
-    status: "Activo",
-    battery: "92%",
-    signal: "Forte",
-  },
-];
+import { sensorService } from "@/services/sensor/sensor.service";
+import type {
+  SensorAccessRequestDto,
+  SensorDto,
+} from "@/services/sensor/types";
 
 export default function Main() {
   const { user } = useAuth();
   const navigate = useNavigate();
+  const [stations, setStations] = useState<SensorDto[]>([]);
+  const [requests, setRequests] = useState<SensorAccessRequestDto[]>([]);
+
+  useEffect(() => {
+    const loadSummary = async () => {
+      const [sensorsResponse, requestsResponse] = await Promise.all([
+        sensorService.find.all(),
+        sensorService.accessRequests.all(
+          user?.role === "ADMIN" ? "PENDING" : undefined,
+        ),
+      ]);
+
+      if (sensorsResponse.success) {
+        setStations((sensorsResponse.data ?? []).slice(0, 3));
+      }
+
+      if (requestsResponse.success) {
+        setRequests((requestsResponse.data ?? []).slice(0, 3));
+      }
+    };
+
+    void loadSummary();
+  }, [user?.role]);
 
   return (
     <Box sx={{ flex: 1, p: { xs: 1, md: 2 } }}>
@@ -101,18 +116,18 @@ export default function Main() {
                     <Stack direction="row" spacing={2} alignItems="center">
                       <Avatar
                         sx={{
-                          bgcolor: station.color,
+                          bgcolor: "#10b981",
                         }}
                       >
-                        <station.Icone fontSize="small" />
+                        <Grass fontSize="small" />
                       </Avatar>
                       <Box>
                         <Typography variant="body1" fontWeight={700}>
-                          {station.name}
+                          {station.sensorCode}
                         </Typography>
                         <Stack direction="row" spacing={1} sx={{ mt: 0.5 }}>
                           <Chip
-                            label={station.type}
+                            label="Sensor"
                             size="small"
                             variant="outlined"
                             sx={{
@@ -121,7 +136,7 @@ export default function Main() {
                             }}
                           />
                           <Typography variant="caption" color="text.secondary">
-                            Sinal: {station.signal}
+                            Registado no sistema
                           </Typography>
                         </Stack>
                       </Box>
@@ -148,12 +163,10 @@ export default function Main() {
                           variant="body2"
                           fontWeight={700}
                           color={
-                            station.status === "Ativo"
-                              ? "success.main"
-                              : "warning.main"
+                            station.deletedAt ? "warning.main" : "success.main"
                           }
                         >
-                          {station.status}
+                          {station.deletedAt ? "Inativo" : "Ativo"}
                         </Typography>
                       </Box>
                     </Stack>
@@ -193,8 +206,9 @@ export default function Main() {
                 </Button>
               </Stack>
               <Stack spacing={2}>
-                {user.role === "ADMIN" ? (
+                {requests.map((request) => (
                   <Box
+                    key={request.id}
                     sx={{
                       p: 2,
                       borderRadius: 3,
@@ -207,102 +221,58 @@ export default function Main() {
                         sx={{
                           width: 32,
                           height: 32,
-                          bgcolor: "warning.main",
+                          bgcolor:
+                            user.role === "ADMIN"
+                              ? "warning.main"
+                              : "primary.main",
                         }}
                       >
-                        <Person fontSize="small" />
+                        {user.role === "ADMIN" ? (
+                          <Person fontSize="small" />
+                        ) : (
+                          <Cpu size={18} />
+                        )}
                       </Avatar>
                       <Box>
                         <Typography variant="body2" fontWeight={800}>
-                          Eng. Castro Almeida
+                          {user.role === "ADMIN"
+                            ? request.user.name
+                            : `Sensor ${request.sensor.sensorCode}`}
                         </Typography>
                         <Typography variant="caption" color="text.secondary">
-                          Solicitou: Sensor TDS (Água)
+                          {user.role === "ADMIN"
+                            ? `Solicitou: ${request.sensor.sensorCode}`
+                            : request.status}
                         </Typography>
                       </Box>
                     </Stack>
 
-                    <Stack direction="row" spacing={1}>
-                      <Button
-                        size="small"
-                        variant="contained"
-                        color="success"
-                        sx={{
-                          flex: 1,
-                          borderRadius: 2,
-                          fontWeight: 700,
-                          textTransform: "none",
-                        }}
-                      >
-                        Aprovar
-                      </Button>
-                      <Button
-                        size="small"
-                        variant="outlined"
-                        color="error"
-                        sx={{
-                          flex: 1,
-                          borderRadius: 2,
-                          fontWeight: 700,
-                          textTransform: "none",
-                        }}
-                      >
-                        Recusar
-                      </Button>
-                    </Stack>
+                    <Chip
+                      size="small"
+                      variant="outlined"
+                      color={
+                        request.status === "PENDING"
+                          ? "warning"
+                          : request.status === "APPROVED"
+                            ? "success"
+                            : "error"
+                      }
+                      sx={{
+                        flex: 1,
+                        borderRadius: 2,
+                        fontWeight: 700,
+                        py: 2,
+                      }}
+                      label={
+                        request.status === "PENDING"
+                          ? "Pendente"
+                          : request.status === "APPROVED"
+                            ? "Aprovado"
+                            : "Recusado"
+                      }
+                    />
                   </Box>
-                ) : (
-                  <Box
-                    sx={{
-                      p: 2,
-                      borderRadius: 3,
-                      bgcolor: "#FFFBEB",
-                      border: "1px solid #FEF3C7",
-                    }}
-                  >
-                    <Stack direction="row" spacing={2} sx={{ mb: 2 }}>
-                      <Avatar
-                        sx={{
-                          width: 32,
-                          height: 32,
-                          bgcolor: "primary.main",
-                        }}
-                      >
-                        <Cpu fontSize="small" />
-                      </Avatar>
-                      <Box>
-                        <Typography variant="body2" fontWeight={800}>
-                          Solicitou: Sensor TDS (Água)
-                        </Typography>
-                        <Typography variant="caption" color="text.secondary">
-                          {new Date().toLocaleDateString("pt-BR", {
-                            second: "2-digit",
-                            minute: "2-digit",
-                            hour: "2-digit",
-                            day: "2-digit",
-                            month: "long",
-                            year: "numeric",
-                          })}
-                        </Typography>
-                      </Box>
-                    </Stack>
-
-                    <Stack direction="row" spacing={1}>
-                      <Chip
-                        size="small"
-                        variant="outlined"
-                        color="warning"
-                        sx={{
-                          flex: 1,
-                          borderRadius: 2,
-                          fontWeight: 700,
-                          py: 2,
-                        }}
-                        label="Pendente"
-                      />
-                    </Stack>
-                  </Box>
-                )}
+                ))}
               </Stack>
             </Card>
           </Box>

@@ -18,6 +18,10 @@ type FindAllReadingsFilters = {
   user?: AuthUserPayload;
 };
 
+type SensorReadingState = Omit<CreatesDto, 'timestamp'> & {
+  timestamp?: string | Date;
+};
+
 @Injectable()
 export class SensorreadingService {
   constructor(
@@ -27,7 +31,7 @@ export class SensorreadingService {
   ) {}
 
   async create(data: CreatesDto) {
-    const { sensorCode, ...reading } = data;
+    const { sensorCode, timestamp, ...reading } = data;
 
     const isSensorValid = await this.prisma.sensor.findUnique({
       where: { sensorCode },
@@ -37,18 +41,87 @@ export class SensorreadingService {
       throw new BadRequestException('Sensor inválido.');
     }
 
-    const crestedReading = await this.prisma.sensorReadings.create({
-      data: { ...reading, sensorId: isSensorValid.id },
+    const createdReading = await this.prisma.sensorReadings.create({
+      data: {
+        ...reading,
+        ...(timestamp
+          ? { createdAt: this.parseDate(timestamp, 'Timestamp') }
+          : {}),
+        sensorId: isSensorValid.id,
+      },
     });
 
     return this.onSensorStateChange(isSensorValid.id, {
       ...data,
-      timestamp: crestedReading.createdAt,
+      timestamp: createdReading.createdAt,
     });
   }
 
+  async createMany(data: CreatesDto[]) {
+    if (!Array.isArray(data) || data.length === 0) {
+      throw new BadRequestException('Informe pelo menos uma leitura.');
+    }
+
+    // 1. Extrair códigos únicos de sensores
+    const sensorCodes = [...new Set(data.map((item) => item.sensorCode))];
+
+    // 2. Buscar todos os sensores existentes em uma única consulta
+    const existingSensors = await this.prisma.sensor.findMany({
+      where: { sensorCode: { in: sensorCodes } },
+    });
+
+    // 3. Mapear código -> sensor para acesso rápido
+    const sensorMap = new Map(existingSensors.map((s) => [s.sensorCode, s]));
+
+    // 4. Verificar se algum sensor é inválido
+    const invalidCodes = sensorCodes.filter((code) => !sensorMap.has(code));
+    if (invalidCodes.length) {
+      throw new BadRequestException(
+        `Sensores inválidos: ${invalidCodes.join(', ')}`,
+      );
+    }
+
+    // 5. Preparar as leituras antes de gravar para evitar lotes parciais.
+    const readingsToCreate = data.map((readingData) => {
+      const sensor = sensorMap.get(readingData.sensorCode)!;
+      const { sensorCode, timestamp, ...readingWithoutCode } = readingData;
+
+      return {
+        sensorCode,
+        sensorId: sensor.id,
+        payload: readingWithoutCode,
+        data: {
+          ...readingWithoutCode,
+          ...(timestamp
+            ? { createdAt: this.parseDate(timestamp, 'Timestamp') }
+            : {}),
+          sensorId: sensor.id,
+        },
+      };
+    });
+
+    const createdReadings = await this.prisma.$transaction(
+      readingsToCreate.map((reading) =>
+        this.prisma.sensorReadings.create({ data: reading.data }),
+      ),
+    );
+
+    await Promise.all(
+      createdReadings.map((createdReading, index) => {
+        const reading = readingsToCreate[index];
+        return this.onSensorStateChange(reading.sensorId, {
+          ...reading.payload,
+          timestamp: createdReading.createdAt,
+          sensorCode: reading.sensorCode,
+        });
+      }),
+    );
+
+    return createdReadings;
+  }
+
   // Chamado sempre que um sensor muda (via MQTT, polling, webhook, etc.)
-  async onSensorStateChange(sensorId: string, newState: CreatesDto) {
+  async onSensorStateChange(sensorId: string, newState: SensorReadingState) {
     // 1. Persiste no teu DB se necessário
     // await this.repo.save({ sensorId, state: newState });
 
@@ -158,7 +231,7 @@ export class SensorreadingService {
     return limit;
   }
 
-  private parseDate(value: string, field: string) {
+  private parseDate(value: string | Date, field: string) {
     const date = new Date(value);
     if (Number.isNaN(date.getTime())) {
       throw new BadRequestException(`${field} inválida.`);

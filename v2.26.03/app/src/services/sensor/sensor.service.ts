@@ -3,6 +3,7 @@ import type {
   UpdateSensorDto,
   CreateSensorDto,
   AllocateSensorDto,
+  SensorAccessRequestStatus,
 } from "./types";
 
 const create = async (data: CreateSensorDto) => {
@@ -68,6 +69,86 @@ const find = {
       };
     }
   },
+  available: async () => {
+    try {
+      const response = await api.get(`/sensor/available`);
+
+      return {
+        success: true,
+        data: response.data,
+      };
+    } catch (error) {
+      return {
+        success: false,
+        ...(error.response?.data || error),
+      };
+    }
+  },
+};
+
+const accessRequests = {
+  create: async (sensorId: string) => {
+    try {
+      const response = await api.post("/sensor-access-requests", { sensorId });
+
+      return {
+        success: true,
+        data: response.data,
+      };
+    } catch (error) {
+      return {
+        success: false,
+        ...(error.response?.data || error),
+      };
+    }
+  },
+  all: async (status?: SensorAccessRequestStatus) => {
+    try {
+      const response = await api.get("/sensor-access-requests", {
+        params: { status },
+      });
+
+      return {
+        success: true,
+        data: response.data,
+      };
+    } catch (error) {
+      return {
+        success: false,
+        ...(error.response?.data || error),
+      };
+    }
+  },
+  approve: async (id: string) => {
+    try {
+      const response = await api.patch(`/sensor-access-requests/${id}/approve`);
+
+      return {
+        success: true,
+        data: response.data,
+      };
+    } catch (error) {
+      return {
+        success: false,
+        ...(error.response?.data || error),
+      };
+    }
+  },
+  reject: async (id: string) => {
+    try {
+      const response = await api.patch(`/sensor-access-requests/${id}/reject`);
+
+      return {
+        success: true,
+        data: response.data,
+      };
+    } catch (error) {
+      return {
+        success: false,
+        ...(error.response?.data || error),
+      };
+    }
+  },
 };
 
 const update = async (props: { id: string; data: UpdateSensorDto }) => {
@@ -108,4 +189,5 @@ export const sensorService = {
   update,
   delete: remove,
   allocate,
+  accessRequests,
 };

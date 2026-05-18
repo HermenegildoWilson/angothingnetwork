@@ -1,6 +1,6 @@
 import { Type } from 'class-transformer';
 import {
-  IsDate,
+  IsDateString,
   IsNotEmpty,
   IsNumber,
   IsOptional,
@@ -28,7 +28,7 @@ export default class CreateSensorReadingDto {
   @IsNumber({}, { message: 'O campo air_quality deve ser um número.' })
   air_quality!: number;
 
-  @IsDate()
+  @IsDateString({}, { message: 'O campo timestamp deve ser uma data ISO.' })
   @IsOptional()
-  timestamp?: Date;
+  timestamp?: string;
 }
