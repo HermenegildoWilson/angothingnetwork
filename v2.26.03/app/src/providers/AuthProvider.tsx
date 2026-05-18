@@ -58,7 +58,7 @@ export function AuthProvider({ children }: AuthProviderProps) {
         }
         return result;
       },
-      sensor: {ids: ["cmnd31bt000006hi03lutoimd"], codes: ["Esp-32-001"]},
+      sensor: user?.sensor ?? { ids: [], codes: [] },
     }),
     [appState, isAuthenticated, user],
   );

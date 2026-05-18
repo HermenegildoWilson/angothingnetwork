@@ -6,22 +6,39 @@ import {
   Patch,
   Param,
   Delete,
+  Query,
 } from '@nestjs/common';
 import { SensorreadingService } from './sensorreading.service';
 import CreateSensorReadingDto from './dto/create-sensorreading.dto';
+import { Public } from '../auth/decorators/public.decorator';
+import { CurrentUser } from '../auth/decorators/current-user.decorator';
+import type { AuthUserPayload } from '../auth/auth.jwt';
 
 @Controller('sensorreading')
 export class SensorreadingController {
   constructor(private readonly sensorreadingService: SensorreadingService) {}
 
   @Post()
+  @Public()
   create(@Body() data: CreateSensorReadingDto) {
     return this.sensorreadingService.create(data);
   }
 
   @Get()
-  findAll() {
-    return this.sensorreadingService.findAll();
+  findAll(
+    @Query('sensorCode') sensorCode?: string,
+    @Query('startDate') startDate?: string,
+    @Query('endDate') endDate?: string,
+    @Query('limit') limit?: string,
+    @CurrentUser() user?: AuthUserPayload,
+  ) {
+    return this.sensorreadingService.findAll({
+      sensorCode,
+      startDate,
+      endDate,
+      limit,
+      user,
+    });
   }
 
   @Get(':id')

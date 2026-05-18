@@ -22,5 +22,12 @@ export type SensorReadingDto = {
   humidity: number;
   pressure: number;
   air_quality: number;
-  timestamp: Date;
+  timestamp: string | Date;
+};
+
+export type SensorReadingFilters = {
+  sensorCode?: string;
+  startDate?: string;
+  endDate?: string;
+  limit?: number;
 };

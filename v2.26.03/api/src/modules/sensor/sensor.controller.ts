@@ -11,6 +11,8 @@ import { SensorService } from './sensor.service';
 import CreateSensorDto from './dto/create-sensor.dto';
 import UpdateSensorDto from './dto/update-sensor.dto';
 import CreateSensorAllocationDto from './dto/create-sensorallocation.dto';
+import { CurrentUser } from '../auth/decorators/current-user.decorator';
+import type { AuthUserPayload } from '../auth/auth.jwt';
 
 @Controller('sensor')
 export class SensorController {
@@ -29,6 +31,11 @@ export class SensorController {
   @Get()
   findAll() {
     return this.sensorService.findAll();
+  }
+
+  @Get('me/list')
+  findMine(@CurrentUser() user: AuthUserPayload) {
+    return this.sensorService.findByUser(user.id);
   }
 
   @Get(':id')

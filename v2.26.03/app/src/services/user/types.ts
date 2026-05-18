@@ -7,6 +7,10 @@ export class UserDto {
   role?: "ADMIN" | "CLIENT" | "VISITOR";
   photoUrl?: string | null;
   createdAt?: string;
+  sensor?: {
+    ids: string[];
+    codes: string[];
+  };
 }
 
 export default class CreateUserDto {

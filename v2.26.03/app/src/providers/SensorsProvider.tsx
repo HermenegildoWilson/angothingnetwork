@@ -51,10 +51,11 @@ export default function SensorsReadingProvider({ children }) {
     return () => {
       socket.off("connect");
       socket.off("disconnect");
+      socket.off("sensor:init");
       socket.off("sensor:update");
       destroySocket();
     };
-  }, [sensor, user?.id]);
+  }, [sensor.ids, user?.id]);
 
   // Subscrever um sensor adicional em runtime
   const subscribe = useCallback(

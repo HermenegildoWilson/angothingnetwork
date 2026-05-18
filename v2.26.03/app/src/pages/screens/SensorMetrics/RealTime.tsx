@@ -27,6 +27,7 @@ import {
   normalizeHistoryReading,
 } from "@/services/sensor/sensorreading.service";
 import theme from "@/theme";
+import type { SensorReadingDto } from "@/services/sensor/types";
 
 const maxPoints = 10;
 export default function RealTime() {
@@ -36,6 +37,7 @@ export default function RealTime() {
 
   const [actualReading, setActualReading] = useState(SensorReading[0] ?? null);
   const [history, setHistory] = useState(initialHistoryReading);
+  const [, setLiveReadings] = useState<SensorReadingDto[]>([]);
 
   const [activeParam, setActiveParam] = useState("temperature");
   const [config, setConfig] = useState<parameterOptionsPayload>(
@@ -52,25 +54,45 @@ export default function RealTime() {
   };
 
   const onSensorChange = () => {
-    const newReading = SensorReading.filter(
+    const newReading = SensorReading.find(
       (reading) => reading.sensorCode === sensorCodeValue,
     );
-    setActualReading(newReading?.[0] ?? null);
+    setActualReading(newReading ?? null);
+    setLiveReadings([]);
+    setHistory(initialHistoryReading);
     setOpenDialog(false);
   };
 
   useEffect(() => {
-    setActualReading(SensorReading[0]);
-    setSensorCodeValue(SensorReading[0].sensorCode);
-  }, [SensorReading]);
+    const firstReading = SensorReading.find((reading) => reading.sensorCode);
+    if (!firstReading) return;
+    if (sensorCodeValue) return;
+    setActualReading(firstReading);
+    setSensorCodeValue(firstReading.sensorCode);
+  }, [SensorReading, sensorCodeValue]);
 
   useEffect(() => {
-    if (!SensorReading[0].humidity) return;
-    const normalizedData = normalizeHistoryReading(SensorReading, maxPoints);
+    const selectedReading = SensorReading.find(
+      (reading) => reading.sensorCode === sensorCodeValue,
+    );
 
-    setSensorCodeValue(SensorReading[0].sensorCode);
-    setHistory(normalizedData);
-  }, [SensorReading]);
+    if (!selectedReading?.timestamp) return;
+
+    setActualReading(selectedReading);
+    setLiveReadings((previous) => {
+      if (
+        previous.some(
+          (reading) => reading.timestamp === selectedReading.timestamp,
+        )
+      ) {
+        return previous;
+      }
+
+      const next = [...previous, selectedReading].slice(-maxPoints);
+      setHistory(normalizeHistoryReading(next, maxPoints));
+      return next;
+    });
+  }, [SensorReading, sensorCodeValue]);
 
   return (
     <>

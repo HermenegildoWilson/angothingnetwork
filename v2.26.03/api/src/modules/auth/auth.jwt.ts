@@ -11,6 +11,10 @@ export type AuthUserPayload = {
   role: UserRole;
   photoUrl?: string | null;
   createdAt: string;
+  sensor?: {
+    ids: string[];
+    codes: string[];
+  };
 };
 
 export type JwtPayload = {
@@ -36,6 +40,15 @@ export const isAuthUserPayload = (value: unknown): value is AuthUserPayload => {
   if (typeof value.phone !== 'string') return false;
   if (!isUserRole(value.role)) return false;
   if (typeof value.createdAt !== 'string') return false;
+  if (value.sensor !== undefined) {
+    if (!isRecord(value.sensor)) return false;
+    if (!Array.isArray(value.sensor.ids)) return false;
+    if (!Array.isArray(value.sensor.codes)) return false;
+    if (!value.sensor.ids.every((id) => typeof id === 'string')) return false;
+    if (!value.sensor.codes.every((code) => typeof code === 'string')) {
+      return false;
+    }
+  }
   if (
     value.photoUrl !== undefined &&
     value.photoUrl !== null &&

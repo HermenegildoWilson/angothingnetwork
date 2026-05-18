@@ -7,6 +7,16 @@ import CreatesDto from './dto/create-sensorreading.dto';
 import { PrismaService } from '../prisma/prisma.service';
 import { SensorsGateway } from './webSocketGateway';
 import { RedisService } from '@/config/redis/redis.service';
+import { Prisma } from '@/generated/prisma/client';
+import { AuthUserPayload } from '../auth/auth.jwt';
+
+type FindAllReadingsFilters = {
+  sensorCode?: string;
+  startDate?: string;
+  endDate?: string;
+  limit?: string;
+  user?: AuthUserPayload;
+};
 
 @Injectable()
 export class SensorreadingService {
@@ -69,10 +79,39 @@ export class SensorreadingService {
     };
   }
 
-  async findAll() {
+  async findAll(filters: FindAllReadingsFilters = {}) {
+    const take = this.parseLimit(filters.limit);
+    const where: Prisma.SensorReadingsWhereInput = {};
+
+    if (filters.sensorCode) {
+      where.sensor = { sensorCode: filters.sensorCode };
+    }
+
+    if (filters.user?.role !== 'ADMIN') {
+      where.sensor = {
+        ...(where.sensor as Prisma.SensorWhereInput | undefined),
+        sensorAllocation: {
+          userId: filters.user?.id,
+          deletedAt: null,
+        },
+      };
+    }
+
+    const createdAt: Prisma.DateTimeFilter = {};
+    if (filters.startDate) {
+      createdAt.gte = this.parseDate(filters.startDate, 'Data inicial');
+    }
+    if (filters.endDate) {
+      createdAt.lte = this.parseDate(filters.endDate, 'Data final');
+    }
+    if (createdAt.gte || createdAt.lte) {
+      where.createdAt = createdAt;
+    }
+
     const readings = await this.prisma.sensorReadings.findMany({
+      where,
       orderBy: { createdAt: 'desc' },
-      take: 100,
+      take,
       include: { sensor: { select: { sensorCode: true } } },
     });
 
@@ -106,5 +145,22 @@ export class SensorreadingService {
     }
 
     return { message: 'Leitura removida com sucesso.' };
+  }
+
+  private parseLimit(value?: string) {
+    if (!value) return 100;
+    const limit = Number(value);
+    if (!Number.isInteger(limit) || limit < 1 || limit > 1000) {
+      throw new BadRequestException('O limite deve estar entre 1 e 1000.');
+    }
+    return limit;
+  }
+
+  private parseDate(value: string, field: string) {
+    const date = new Date(value);
+    if (Number.isNaN(date.getTime())) {
+      throw new BadRequestException(`${field} inválida.`);
+    }
+    return date;
   }
 }

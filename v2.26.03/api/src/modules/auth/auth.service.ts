@@ -67,7 +67,7 @@ export class AuthService {
       throw new UnauthorizedException('Credenciais inválidas.');
     }
 
-    const payload = this.buildUserPayload(user);
+    const payload = await this.buildUserPayload(user);
     const accessToken = this.signAccessToken(payload);
     const refreshToken = this.signRefreshToken(payload);
     const refreshTokenHash = this.hashToken(refreshToken);
@@ -141,7 +141,7 @@ export class AuthService {
       data: { lastUsedAt: new Date() },
     });
 
-    const userPayload = this.buildUserPayload(user);
+    const userPayload = await this.buildUserPayload(user);
     const accessToken = this.signAccessToken(userPayload);
 
     return {
@@ -172,7 +172,13 @@ export class AuthService {
     return this.parseExpiresIn(this.env.jwtRefreshExpiresIn);
   }
 
-  private buildUserPayload(user: User): AuthUserPayload {
+  private async buildUserPayload(user: User): Promise<AuthUserPayload> {
+    const allocations = await this.prisma.sensorAllocation.findMany({
+      where: { userId: user.id, deletedAt: null },
+      include: { sensor: { select: { id: true, sensorCode: true } } },
+      orderBy: { createdAt: 'asc' },
+    });
+
     return {
       id: user.id,
       name: user.name,
@@ -182,6 +188,10 @@ export class AuthService {
       role: user.role,
       photoUrl: user.photoUrl,
       createdAt: user.createdAt.toISOString(),
+      sensor: {
+        ids: allocations.map((allocation) => allocation.sensor.id),
+        codes: allocations.map((allocation) => allocation.sensor.sensorCode),
+      },
     };
   }
 

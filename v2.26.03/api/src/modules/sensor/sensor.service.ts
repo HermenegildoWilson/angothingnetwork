@@ -20,7 +20,9 @@ export class SensorService {
       throw new BadRequestException('Sensor inválido.');
     }
 
-    const isUserValid = await this.findOne({ where: { id: data.sensorId } });
+    const isUserValid = await this.prisma.user.findUnique({
+      where: { id: data.userId },
+    });
 
     if (!isUserValid) {
       throw new BadRequestException('Usuário inexistente.');
@@ -33,6 +35,19 @@ export class SensorService {
 
   findAll(args?: Prisma.SensorFindManyArgs) {
     return this.prisma.sensor.findMany(args);
+  }
+
+  findByUser(userId: string) {
+    return this.prisma.sensor.findMany({
+      where: {
+        deletedAt: null,
+        sensorAllocation: {
+          userId,
+          deletedAt: null,
+        },
+      },
+      orderBy: { createdAt: 'asc' },
+    });
   }
 
   findOne(args: Prisma.SensorFindUniqueArgs) {
