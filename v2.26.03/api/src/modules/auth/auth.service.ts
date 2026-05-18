@@ -82,13 +82,13 @@ export class AuthService {
       },
     });
 
-    void this.mailService
-      .sendSecurityAlert({
-        to: user.email,
-        nome: user.name,
-        deviceInfo: data.deviceDto,
-      })
-      .catch(() => undefined);
+    // void this.mailService
+    //   .sendSecurityAlert({
+    //     to: user.email,
+    //     nome: user.name,
+    //     deviceInfo: data.deviceDto,
+    //   })
+    //   .catch(() => undefined);
 
     return {
       accessToken,

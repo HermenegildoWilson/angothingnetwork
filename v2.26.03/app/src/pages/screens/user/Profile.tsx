@@ -1,4 +1,4 @@
-import { Avatar, Box, Card, Typography, Divider, Paper } from "@mui/material";
+import { Avatar, Box, Card, Typography, Divider, Paper, Menu, MenuItem } from "@mui/material";
 import {
   User,
   Mail,
@@ -9,11 +9,12 @@ import {
   IdCard,
 } from "lucide-react";
 import type { UserDto } from "@/services/user/types";
-import MoreVertMenu from "@/components/modal/MoreVertMenu";
+import EditProfileModal from "@/components/modal/EditProfileModal";
 import { useParams } from "react-router-dom";
 import { useEffect, useState } from "react";
 import { userService } from "@/services/user/user.service";
 import { useAuth } from "@/hooks/useAuth";
+import { useAlert } from "@/hooks/useAlert";
 
 const iconMapper = {
   id: IdCard,
@@ -28,7 +29,11 @@ const iconMapper = {
 export default function Profile() {
   const { id } = useParams();
   const { user } = useAuth();
+  const { setAlert } = useAlert();
   const [profile, setProfile] = useState<UserDto>(user);
+  const [modalOpen, setModalOpen] = useState(false);
+  const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
+  const open = Boolean(anchorEl);
 
   useEffect(() => {
     const getProfile = async () => {
@@ -40,6 +45,37 @@ export default function Profile() {
       getProfile();
     }
   }, [id, user]);
+
+  const handleClick = (event: React.MouseEvent<HTMLElement>) => {
+    setAnchorEl(event.currentTarget);
+  };
+
+  const handleClose = () => {
+    setAnchorEl(null);
+  };
+
+  const handleEditClick = () => {
+    setModalOpen(true);
+    handleClose();
+  };
+
+  const handleDeleteClick = () => {
+    setAlert({
+      type: "SHOW",
+      text: "Funcionalidade de deletar em desenvolvimento.",
+      style: "warning",
+      duration: 4000,
+    });
+    handleClose();
+  };
+
+  const handleModalClose = () => {
+    setModalOpen(false);
+  };
+
+  const handleProfileUpdate = (updatedProfile: UserDto) => {
+    setProfile(updatedProfile);
+  };
 
   return (
     <Box
@@ -55,7 +91,7 @@ export default function Profile() {
             backdropFilter: "blur(10px)",
           }}
         >
-          {/* Header do Profife */}
+          {/* Header do Profile */}
           <Box
             sx={{
               p: 2,
@@ -66,7 +102,6 @@ export default function Profile() {
               borderRadius: "32px 32px 0 0",
             }}
           >
-            <MoreVertMenu options={["Editar", "Deletar"]} />
             <Avatar
               sx={{
                 width: 110,
@@ -81,6 +116,46 @@ export default function Profile() {
             >
               {profile.name[0]}
             </Avatar>
+            {/* Menu Button */}
+            <Box
+              sx={{
+                position: "absolute",
+                top: 8,
+                right: 8,
+              }}
+            >
+              <Avatar
+                onClick={handleClick}
+                sx={{
+                  width: 32,
+                  height: 32,
+                  bgcolor: "action.hover",
+                  cursor: "pointer",
+                  "&:hover": {
+                    bgcolor: "action.selected",
+                  },
+                }}
+              >
+                ⋮
+              </Avatar>
+              <Menu
+                id="profile-menu"
+                anchorEl={anchorEl}
+                open={open}
+                onClose={handleClose}
+                slotProps={{
+                  paper: {
+                    style: {
+                      maxHeight: 200,
+                      width: "18ch",
+                    },
+                  },
+                }}
+              >
+                <MenuItem onClick={handleEditClick}>Editar</MenuItem>
+                <MenuItem onClick={handleDeleteClick}>Deletar</MenuItem>
+              </Menu>
+            </Box>
           </Box>
 
           <Divider sx={{ mx: 4, opacity: 0.6 }} />
@@ -99,6 +174,14 @@ export default function Profile() {
           </Box>
         </Card>
       </Box>
+
+      {/* Edit Profile Modal */}
+      <EditProfileModal
+        open={modalOpen}
+        onClose={handleModalClose}
+        profile={profile}
+        onSuccess={handleProfileUpdate}
+      />
     </Box>
   );
 }

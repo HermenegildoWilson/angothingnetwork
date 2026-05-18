@@ -38,28 +38,12 @@ export class EnvService {
     return this.config.get<string>('admin.email')!;
   }
 
-  get mailUser(): string {
-    return this.config.get<string>('mail.user')!;
+  get resendApiKey(): string {
+    return this.config.get<string>('mail.resendApiKey')!;
   }
 
-  get mailPass(): string {
-    return this.config.get<string>('mail.pass')!;
-  }
-
-  get mailHost(): string {
-    return this.config.get<string>('mail.host')!;
-  }
-
-  get mailPort(): number {
-    return this.config.get<number>('mail.port')!;
-  }
-
-  get mailSecure(): boolean {
-    return this.config.get<boolean>('mail.secure')!;
-  }
-
-  get mailConnectionTimeout(): number {
-    return this.config.get<number>('mail.connectionTimeout')!;
+  get resendFrom(): string {
+    return this.config.get<string>('mail.resendFrom')!;
   }
 
   get jwtAccessSecret(): string {

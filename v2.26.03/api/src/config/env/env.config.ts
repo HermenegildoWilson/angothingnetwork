@@ -41,12 +41,9 @@ export default () => {
     },
 
     mail: {
-      host: process.env.MAIL_HOST ?? 'smtp.gmail.com',
-      port: parseInt(process.env.MAIL_PORT ?? '587'),
-      secure: process.env.MAIL_SECURE === 'true',
-      user: process.env.MAIL_USER,
-      pass: process.env.MAIL_PASS,
-      connectionTimeout: parseInt(process.env.MAIL_CONNECTION_TIMEOUT ?? '30000'),
+      resendApiKey: process.env.RESEND_API_KEY,
+      resendFrom:
+        process.env.RESEND_FROM ?? 'Angothingnetwork <onboarding@resend.dev>',
     },
 
     jwt: {

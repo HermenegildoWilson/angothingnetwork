@@ -164,8 +164,37 @@ export class UserService {
     return this.prisma.user.findUnique(args);
   }
 
-  update(params: { where: Prisma.UserWhereUniqueInput; data: UpdateUserDto }) {
-    return this.prisma.user.update({ ...params, omit: { passwordHash: true } });
+  async update(params: {
+    where: Prisma.UserWhereUniqueInput;
+    data: UpdateUserDto;
+  }) {
+    const { where, data } = params;
+
+    // Impedir alteração de email e phone (campos readonly)
+    if (data.email || data.phone) {
+      throw new BadRequestException(
+        'Email e telefone não podem ser alterados.',
+      );
+    }
+
+    // Verificar unicidade do username se estiver a ser alterado
+    if (data.username) {
+      const existingUser = await this.prisma.user.findUnique({
+        where: { username: data.username },
+      });
+
+      if (existingUser && existingUser.id !== where.id) {
+        throw new ConflictException(
+          'Username já está em uso por outro utilizador.',
+        );
+      }
+    }
+
+    // Atualizar utilizador
+    return this.prisma.user.update({
+      ...params,
+      omit: { passwordHash: true },
+    });
   }
 
   async updatePassword(params: {

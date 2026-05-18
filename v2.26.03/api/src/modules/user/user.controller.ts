@@ -6,6 +6,7 @@ import {
   Patch,
   Param,
   Delete,
+  ForbiddenException,
 } from '@nestjs/common';
 import { UserService } from './user.service';
 import CreateUserDto, {
@@ -18,6 +19,8 @@ import UpdateUserDto, {
   UpdatePasswordDto,
 } from './dto/update-user.dto';
 import { Public } from '../auth/decorators/public.decorator';
+import { CurrentUser } from '../auth/decorators/current-user.decorator';
+import { UserRole } from '@/generated/prisma/client';
 
 @Controller('user')
 export class UserController {
@@ -61,7 +64,25 @@ export class UserController {
   }
 
   @Patch(':id')
-  update(@Param('id') id: string, @Body() data: UpdateUserDto) {
+  update(
+    @Param('id') id: string,
+    @Body() data: UpdateUserDto,
+    @CurrentUser() currentUser: { id: string; role: UserRole },
+  ) {
+    // Apenas ADMIN pode alterar o role de um utilizador
+    if (data.role && currentUser.role !== 'ADMIN') {
+      throw new ForbiddenException(
+        'Apenas administradores podem alterar o role de um utilizador.',
+      );
+    }
+
+    // Utilizadores normais só podem editar o seu próprio perfil
+    if (currentUser.role !== 'ADMIN' && currentUser.id !== id) {
+      throw new ForbiddenException(
+        'Não tem permissão para editar o perfil de outro utilizador.',
+      );
+    }
+
     return this.userService.update({ where: { id }, data });
   }
 

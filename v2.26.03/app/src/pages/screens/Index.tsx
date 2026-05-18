@@ -7,7 +7,7 @@ import {
   Stack,
   Typography,
 } from "@mui/material";
-
+// Estações
 import { useEffect, useState } from "react";
 import Text from "@/components/ui/Text";
 import Title from "@/components/ui/Title";
@@ -36,7 +36,7 @@ export default function Main() {
           user?.role === "ADMIN" ? "PENDING" : undefined,
         ),
       ]);
-
+      
       if (sensorsResponse.success) {
         setStations((sensorsResponse.data ?? []).slice(0, 3));
       }

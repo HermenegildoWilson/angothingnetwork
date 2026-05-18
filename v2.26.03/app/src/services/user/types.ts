@@ -29,6 +29,7 @@ export class UpdateUserDto {
   email: string;
   phone: string;
   username: string;
+  role?: 'ADMIN' | 'CLIENT' | 'VISITOR';
 }
 
 export class UpdateUserPasswordDto {

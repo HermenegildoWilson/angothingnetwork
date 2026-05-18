@@ -29,11 +29,7 @@ export const envValidationSchema = Joi.object({
   JWT_ACCESS_IN: Joi.string().required(),
   JWT_REFRESH_IN: Joi.string().required(),
 
-  // Mais Service
-  MAIL_HOST: Joi.string().hostname().default('smtp.gmail.com'),
-  MAIL_PORT: Joi.number().port().default(587),
-  MAIL_SECURE: Joi.boolean().truthy('true').falsy('false').default(false),
-  MAIL_CONNECTION_TIMEOUT: Joi.number().integer().min(1000).default(30000),
-  MAIL_USER: Joi.string().email().required(),
-  MAIL_PASS: Joi.string().required(),
+  // Mail Service
+  RESEND_API_KEY: Joi.string().required(),
+  RESEND_FROM: Joi.string().default('Angothingnetwork <onboarding@resend.dev>'),
 });

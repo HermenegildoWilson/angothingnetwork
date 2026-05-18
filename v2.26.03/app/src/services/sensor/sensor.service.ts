@@ -56,7 +56,7 @@ const find = {
   },
   all: async () => {
     try {
-      const response = await api.get(`/sensor`);
+      const response = await api.get(`/sensor`);      
 
       return {
         success: true,

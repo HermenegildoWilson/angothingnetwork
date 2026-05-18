@@ -1,4 +1,11 @@
-import { IsEmail, IsOptional, IsString, Matches } from 'class-validator';
+import {
+  IsEmail,
+  IsEnum,
+  IsOptional,
+  IsString,
+  Matches,
+} from 'class-validator';
+import { UserRole } from '@/generated/prisma/client';
 
 export default class UpdateUserDto {
   @IsString({ message: 'O campo name deve ser uma string.' })
@@ -16,6 +23,13 @@ export default class UpdateUserDto {
   @IsString({ message: 'O campo username deve ser uma string.' })
   @IsOptional()
   username?: string;
+
+  @IsEnum(UserRole, {
+    message:
+      'O campo role deve ser um dos valores válidos: ADMIN, CLIENT, VISITOR.',
+  })
+  @IsOptional()
+  role?: UserRole;
 }
 
 export class UpdatePasswordDto {
