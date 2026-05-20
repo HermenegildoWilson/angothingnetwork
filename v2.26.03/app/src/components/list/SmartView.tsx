@@ -10,6 +10,7 @@ import {
 } from "@mui/material";
 import { Plus } from "lucide-react";
 import type { ElementType, ReactNode } from "react";
+import { ListPageSkeleton } from "@/components/feedback/loader/PageSkeletons";
 
 type SmartViewProps = {
   items: unknown[];
@@ -20,6 +21,8 @@ type SmartViewProps = {
   ItemAvatar: ElementType;
   handleCreateNew?: () => void;
   children: ReactNode;
+  loading?: boolean;
+  skeleton?: ReactNode;
 };
 
 export default function SmartView(smartViewProps: SmartViewProps) {
@@ -32,10 +35,16 @@ export default function SmartView(smartViewProps: SmartViewProps) {
     titleButton = "Adicionar",
     voidMessage = "Sem dados encontrados",
     ItemAvatar,
+    loading = false,
+    skeleton,
   } = smartViewProps;
 
   const theme = useTheme();
   const isMobile = useMediaQuery(theme.breakpoints.down("sm"));
+
+  if (loading) {
+    return skeleton ?? <ListPageSkeleton />;
+  }
 
   return (
     <Box

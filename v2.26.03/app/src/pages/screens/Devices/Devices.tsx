@@ -27,6 +27,7 @@ const requestLabels = {
 
 export default function Devices() {
   const [devices, setDevices] = useState<SensorDto[]>([]);
+  const [loading, setLoading] = useState(true);
   const [openCreateDialog, setOpenCreateDialog] = useState(false);
   const [sensorCode, setSensorCode] = useState("");
   const [submitting, setSubmitting] = useState(false);
@@ -38,10 +39,12 @@ export default function Devices() {
   const { user } = useAuth();
 
   async function getDevices() {
+    setLoading(true);
     const response =
       user?.role === "ADMIN"
         ? await sensorService.find.all()
         : await sensorService.find.available();
+    setLoading(false);
 
     if (response.success) {
       setDevices(response.data ?? []);
@@ -134,6 +137,7 @@ export default function Devices() {
         title="Dispositivos"
         handleCreateNew={handleCreateNew}
         items={devices}
+        loading={loading}
         ItemAvatar={Cpu}
         titleButton={user?.role === "ADMIN" ? "Adicionar" : undefined}
         voidMessage={

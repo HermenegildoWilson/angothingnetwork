@@ -1,6 +1,7 @@
 import {
   Avatar,
   Box,
+  Card,
   Chip,
   Divider,
   Paper,
@@ -11,6 +12,7 @@ import { OnlinePrediction, Sensors } from "@mui/icons-material";
 import { useEffect, useState } from "react";
 import { sensorReadingService } from "@/services/sensor/sensorreading.service";
 import type { SensorPresenceDto } from "@/services/sensor/types";
+import { PresenceSkeleton } from "@/components/feedback/loader/PageSkeletons";
 
 export default function Presence() {
   const [items, setItems] = useState<SensorPresenceDto[]>([]);
@@ -36,6 +38,10 @@ export default function Presence() {
       window.clearInterval(interval);
     };
   }, []);
+
+  if (loading && items.length === 0) {
+    return <PresenceSkeleton />;
+  }
 
   return (
     <Box sx={{ flex: 1, p: { xs: 1, md: 2 } }}>
@@ -83,7 +89,7 @@ export default function Presence() {
           )}
 
           {items.map((item) => (
-            <Paper
+            <Card
               key={item.user.id}
               variant="outlined"
               sx={{ borderRadius: 2, p: { xs: 1.25, md: 1.5 } }}
@@ -130,7 +136,7 @@ export default function Presence() {
                   )}
                 </Stack>
               </Stack>
-            </Paper>
+            </Card>
           ))}
         </Stack>
       </Paper>

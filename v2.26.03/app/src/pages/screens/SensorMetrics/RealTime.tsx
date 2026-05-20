@@ -28,11 +28,12 @@ import {
 } from "@/services/sensor/sensorreading.service";
 import theme from "@/theme";
 import type { SensorReadingDto } from "@/services/sensor/types";
+import { RealTimeSkeleton } from "@/components/feedback/loader/PageSkeletons";
 
 const maxPoints = 10;
 export default function RealTime() {
   const mediaQuery = useMediaQuery(theme.breakpoints.down("md"));
-  const { SensorReading } = useSensorsReading();
+  const { SensorReading, connected } = useSensorsReading();
   const { sensor } = useAuth();
 
   const [actualReading, setActualReading] = useState(SensorReading[0] ?? null);
@@ -47,6 +48,9 @@ export default function RealTime() {
   const [sensorCodeValue, setSensorCodeValue] = useState(
     actualReading?.sensorCode ?? "",
   );
+  const hasReading = SensorReading.some((reading) => reading.sensorCode);
+  const showInitialSkeleton =
+    sensor.ids.length > 0 && !connected && !hasReading;
 
   const onParamChange = (newParamField, newParamName) => {
     setActiveParam(newParamField);
@@ -93,6 +97,10 @@ export default function RealTime() {
       return next;
     });
   }, [SensorReading, sensorCodeValue]);
+
+  if (showInitialSkeleton) {
+    return <RealTimeSkeleton />;
+  }
 
   return (
     <>

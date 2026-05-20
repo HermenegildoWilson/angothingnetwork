@@ -15,15 +15,18 @@ import {
   StationSummaryItem,
   SummaryPanel,
 } from "./SummaryPanel";
+import { DashboardSkeleton } from "@/components/feedback/loader/PageSkeletons";
 
 export default function Main() {
   const { user } = useAuth();
   const navigate = useNavigate();
   const [stations, setStations] = useState<SensorDto[]>([]);
   const [requests, setRequests] = useState<SensorAccessRequestDto[]>([]);
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     const loadSummary = async () => {
+      setLoading(true);
       const [sensorsResponse, requestsResponse] = await Promise.all([
         sensorService.find.all(),
         sensorService.accessRequests.all(
@@ -38,12 +41,17 @@ export default function Main() {
       if (requestsResponse.success) {
         setRequests((requestsResponse.data ?? []).slice(0, 3));
       }
+      setLoading(false);
     };
 
     void loadSummary();
   }, [user?.role]);
 
   const isAdmin = user?.role === "ADMIN";
+
+  if (loading) {
+    return <DashboardSkeleton />;
+  }
 
   return (
     <Box

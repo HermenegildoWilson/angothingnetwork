@@ -16,9 +16,9 @@ import { Cpu, Edit3, Trash2, MapPin, Activity, Wifi } from "lucide-react";
 import { sensorService } from "@/services/sensor/sensor.service";
 import type { SensorDto } from "@/services/sensor/types";
 import DialogDeleteDevice from "./DialogDeleteDevice";
-import FullLoader from "@/components/feedback/loader/FullLoader";
 import { useAlert } from "@/hooks/useAlert";
 import TemporalCards from "@/components/Dashboard/TemporalCards";
+import { DeviceDetailSkeleton } from "@/components/feedback/loader/PageSkeletons";
 
 export default function Device() {
   const { id } = useParams();
@@ -42,7 +42,7 @@ export default function Device() {
   }, [id]);
 
   if (!device && loading) {
-    return <FullLoader />;
+    return <DeviceDetailSkeleton />;
   }
 
   return (

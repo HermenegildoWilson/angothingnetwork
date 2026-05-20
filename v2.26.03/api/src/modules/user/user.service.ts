@@ -101,7 +101,8 @@ export class UserService {
       to: data.email,
       token,
     });
-    console.log(`\n\n${this.env.appUrl}/signup/validate?token=${token}\n\n`);
+
+    // console.log(`\n\n${this.env.appUrl}/signup/validate?token=${token}\n\n`);
 
     return {
       message: `We sent an email with instructions on how to create your account. ${this.maskEmail(data.email)}.`,

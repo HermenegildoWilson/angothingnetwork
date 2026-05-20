@@ -22,12 +22,15 @@ const statusMeta: Record<
 
 export default function SensorAccessRequests() {
   const [requests, setRequests] = useState<SensorAccessRequestDto[]>([]);
+  const [loading, setLoading] = useState(true);
   const [submittingId, setSubmittingId] = useState<string | null>(null);
   const { user, refresh } = useAuth();
   const { setAlert } = useAlert();
 
   async function getSensorAccessRequests() {
+    setLoading(true);
     const response = await sensorService.accessRequests.all();
+    setLoading(false);
 
     if (!response.success) {
       setAlert({
@@ -91,6 +94,7 @@ export default function SensorAccessRequests() {
         user?.role === "ADMIN" ? "Pedidos de Acesso" : "Meus Pedidos de Acesso"
       }
       items={requests}
+      loading={loading}
       ItemAvatar={KeyRound}
       voidMessage="Sem pedidos de acesso"
     >

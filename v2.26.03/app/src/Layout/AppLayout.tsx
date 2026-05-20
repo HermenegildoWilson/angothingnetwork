@@ -6,9 +6,6 @@ import theme from "../theme";
 import Header from "../Partials/Header/Header";
 import Sidebar from "../Partials/Sidebar/Sidebar";
 
-const drawerWidth = 0;
-const closedWidth = -22; //`calc(${theme.spacing(7)} + 1px)`;
-
 export default function AppLayout() {
   const [open, setOpen] = useState(false);
   const isMobile = useMediaQuery(theme.breakpoints.down("sm"));
@@ -36,7 +33,6 @@ export default function AppLayout() {
             easing: theme.transitions.easing.sharp,
             duration: theme.transitions.duration.standard,
           }),
-          ml: !isMobile ? (open ? drawerWidth : closedWidth) : 0,
         }}
       >
         <Outlet />

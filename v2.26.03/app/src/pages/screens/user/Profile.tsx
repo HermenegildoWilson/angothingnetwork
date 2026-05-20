@@ -24,6 +24,7 @@ import { useEffect, useState } from "react";
 import { userService } from "@/services/user/user.service";
 import { useAuth } from "@/hooks/useAuth";
 import { useAlert } from "@/hooks/useAlert";
+import { ProfileSkeleton } from "@/components/feedback/loader/PageSkeletons";
 
 const iconMapper = {
   id: IdCard,
@@ -39,19 +40,27 @@ export default function Profile() {
   const { id } = useParams();
   const { user } = useAuth();
   const { setAlert } = useAlert();
-  const [profile, setProfile] = useState<UserDto>(user);
+  const [profile, setProfile] = useState<UserDto | null>(user);
+  const [loading, setLoading] = useState(true);
   const [modalOpen, setModalOpen] = useState(false);
   const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
   const open = Boolean(anchorEl);
 
   useEffect(() => {
     const getProfile = async () => {
+      setLoading(true);
       const response = await userService.find.one(id);
-      setProfile(response.data);
+      if (response.success) {
+        setProfile(response.data);
+      }
+      setLoading(false);
     };
 
     if (id) {
       getProfile();
+    } else {
+      setProfile(user);
+      setLoading(false);
     }
   }, [id, user]);
 
@@ -85,6 +94,10 @@ export default function Profile() {
   const handleProfileUpdate = (updatedProfile: UserDto) => {
     setProfile(updatedProfile);
   };
+
+  if (loading || !profile) {
+    return <ProfileSkeleton />;
+  }
 
   return (
     <Box

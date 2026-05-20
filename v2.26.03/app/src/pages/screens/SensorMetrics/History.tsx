@@ -27,6 +27,7 @@ import parameterOptions from "@/config/sensor/parameterOptions";
 import { AccessTime, FilterList, MyLocation } from "@mui/icons-material";
 import type { SensorReadingDto } from "@/services/sensor/types";
 import type { parameterOptionsName } from "@/config/sensor/types";
+import { HistorySkeleton } from "@/components/feedback/loader/PageSkeletons";
 
 const defaultLimit = 100;
 const graphPoints = 30;
@@ -50,6 +51,7 @@ export default function History() {
   const activeConfig = parameterOptions[activeParam];
   const values = history[activeParam] ?? [];
   const latestReading = readings[readings.length - 1];
+  const isInitialLoading = loading && readings.length === 0;
 
   const stats = useMemo(() => {
     if (values.length === 0) {
@@ -111,6 +113,9 @@ export default function History() {
 
   return (
     <>
+      {isInitialLoading ? (
+        <HistorySkeleton />
+      ) : (
       <Box sx={{ flex: 1, p: 1 }}>
         <Box sx={{ py: 1 }}>
           <Box
@@ -276,6 +281,7 @@ export default function History() {
           />
         </Box>
       </Box>
+      )}
 
       <Dialog
         open={openDialog}

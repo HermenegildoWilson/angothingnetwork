@@ -8,12 +8,15 @@ import { User } from "lucide-react";
 
 export default function Users() {
   const [users, setUsers] = useState([]);
+  const [loading, setLoading] = useState(true);
   const navigate = useNavigate();
 
   async function getUsers() {
     const response = await userService.find.all();
-    console.log(...response.data);
-    setUsers([...response.data]);
+    if (response.success) {
+      setUsers([...(response.data ?? [])]);
+    }
+    setLoading(false);
   }
 
   const handleItemClick = (item: UserDto) => navigate(`/profile/${item.id}`);
@@ -27,6 +30,7 @@ export default function Users() {
     <SmartView
       title="Usuários"
       items={users}
+      loading={loading}
       ItemAvatar={User}
       voidMessage="Sem usuários cadastrados"
     >
