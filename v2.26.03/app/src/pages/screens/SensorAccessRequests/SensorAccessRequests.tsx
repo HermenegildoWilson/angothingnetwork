@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { Bell, Cpu } from "lucide-react";
+import { Cpu, KeyRound } from "lucide-react";
 import SmartView from "@/components/list/SmartView";
 import { useAuth } from "@/hooks/useAuth";
 import { Avatar, Box, Button, Chip, Stack, Typography } from "@mui/material";
@@ -20,13 +20,13 @@ const statusMeta: Record<
   REJECTED: { label: "Recusado", color: "error" },
 };
 
-export default function Notifications() {
+export default function SensorAccessRequests() {
   const [requests, setRequests] = useState<SensorAccessRequestDto[]>([]);
   const [submittingId, setSubmittingId] = useState<string | null>(null);
   const { user, refresh } = useAuth();
   const { setAlert } = useAlert();
 
-  async function getNotifications() {
+  async function getSensorAccessRequests() {
     const response = await sensorService.accessRequests.all();
 
     if (!response.success) {
@@ -41,7 +41,10 @@ export default function Notifications() {
     const data = response.data ?? [];
     setRequests(data);
 
-    if (user?.role !== "ADMIN" && data.some((item) => item.status === "APPROVED")) {
+    if (
+      user?.role !== "ADMIN" &&
+      data.some((item) => item.status === "APPROVED")
+    ) {
       await refresh();
     }
   }
@@ -74,19 +77,21 @@ export default function Notifications() {
           ? "Pedido aprovado com sucesso."
           : "Pedido recusado com sucesso.",
     });
-    await getNotifications();
+    await getSensorAccessRequests();
   };
 
   useEffect(() => {
     // eslint-disable-next-line react-hooks/set-state-in-effect
-    getNotifications();
+    getSensorAccessRequests();
   }, [user?.role]);
 
   return (
     <SmartView
-      title={user?.role === "ADMIN" ? "Pedidos de Acesso" : "Minhas Solicitações"}
+      title={
+        user?.role === "ADMIN" ? "Pedidos de Acesso" : "Meus Pedidos de Acesso"
+      }
       items={requests}
-      ItemAvatar={Bell}
+      ItemAvatar={KeyRound}
       voidMessage="Sem pedidos de acesso"
     >
       <Stack spacing={2}>

@@ -104,14 +104,14 @@ export default function Main() {
           </SummaryPanel>
 
           <SummaryPanel
-            title={isAdmin ? "Pedidos de Acesso" : "Minhas Solicitações"}
+            title={isAdmin ? "Pedidos de Acesso" : "Meus Pedidos de Acesso"}
             emptyMessage={
               isAdmin
                 ? "Não há pedidos pendentes neste momento."
-                : "Ainda não há solicitações para apresentar."
+                : "Ainda não há pedidos de acesso para apresentar."
             }
             hasItems={requests.length > 0}
-            onAction={() => navigate("/notifications")}
+            onAction={() => navigate("/sensor-access-requests")}
           >
             {requests.map((request) => (
               <AccessRequestSummaryItem

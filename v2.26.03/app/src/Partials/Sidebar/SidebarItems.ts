@@ -4,11 +4,11 @@ import {
   History,
   Login,
   Logout,
-  Notifications,
   People,
   PersonAdd,
   Dashboard,
   Home,
+  VpnKey,
 } from "@mui/icons-material";
 import { Cpu } from "lucide-react";
 export const SidebarItems = {
@@ -17,7 +17,11 @@ export const SidebarItems = {
     { text: "Real Time", path: "/realtime", icon: Sensors },
     { text: "Histórico", path: "/history", icon: History },
     { text: "Dispositivos", path: "/devices", icon: Cpu },
-    { text: "Notificações", path: "/notifications", icon: Notifications },
+    {
+      text: "Pedidos de Acesso",
+      path: "/sensor-access-requests",
+      icon: VpnKey,
+    },
     { text: "Usuários", path: "/users", icon: People },
     { text: "Perfil", path: "/profile", icon: AccountCircle },
     { text: "Sair", path: "/signout", icon: Logout },
@@ -27,7 +31,11 @@ export const SidebarItems = {
     { text: "Real Time", path: "/realtime", icon: Sensors },
     { text: "Histórico", path: "/history", icon: History },
     { text: "Dispositivos", path: "/devices", icon: Cpu },
-    { text: "Notificações", path: "/notifications", icon: Notifications },
+    {
+      text: "Pedidos de Acesso",
+      path: "/sensor-access-requests",
+      icon: VpnKey,
+    },
     { text: "Perfil", path: "/profile", icon: AccountCircle },
     { text: "Sair", path: "/signout", icon: Logout },
   ],
@@ -36,7 +44,11 @@ export const SidebarItems = {
     { text: "Real Time", path: "/realtime", icon: Sensors },
     { text: "Histórico", path: "/history", icon: History },
     { text: "Dispositivos", path: "/devices", icon: Cpu },
-    { text: "Notificações", path: "/notifications", icon: Notifications },
+    {
+      text: "Pedidos de Acesso",
+      path: "/sensor-access-requests",
+      icon: VpnKey,
+    },
     { text: "Perfil", path: "/profile", icon: AccountCircle },
     { text: "Sair", path: "/signout", icon: Logout },
   ],

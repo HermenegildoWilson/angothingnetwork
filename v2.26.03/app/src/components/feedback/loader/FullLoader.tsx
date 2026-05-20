@@ -12,9 +12,9 @@ import {
   Dashboard,
   DeviceThermostat,
   Menu,
-  Notifications,
   Opacity,
   Sensors,
+  VpnKey,
 } from "@mui/icons-material";
 import AppLinearLoader from "./AppLinearLoader";
 
@@ -25,7 +25,7 @@ const metricCards = [
   { color: "#ef4444", Icon: Sensors, delay: "0.24s" },
 ];
 
-const menuItems = [Dashboard, Sensors, Notifications, AccountCircle];
+const menuItems = [Dashboard, Sensors, VpnKey, AccountCircle];
 
 function SoftBlock({
   width = "100%",
@@ -111,7 +111,7 @@ export default function FullLoader() {
                 bgcolor: "rgba(255,255,255,0.14)",
               }}
             >
-              <Notifications fontSize="small" />
+              <VpnKey fontSize="small" />
             </Box>
             <Box
               sx={{

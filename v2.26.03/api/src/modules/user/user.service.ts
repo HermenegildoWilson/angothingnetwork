@@ -83,11 +83,6 @@ export class UserService {
     }
     const token = randomBytes(32).toString('hex');
 
-    await this.mailService.sendUserConfirmation({
-      to: data.email,
-      token,
-    });
-
     const passwordHash = await this.hashPassword(password);
     const username = await this.generateUsername(data.name);
     const expiresAt = toDbTimestamp(new Date(Date.now() + TEN_MINUTES_IN_MS));
@@ -101,6 +96,12 @@ export class UserService {
         passwordHash,
       },
     });
+
+    await this.mailService.sendUserConfirmation({
+      to: data.email,
+      token,
+    });
+    console.log(`\n\n${this.env.appUrl}/signup/validate?token=${token}\n\n`);
 
     return {
       message: `We sent an email with instructions on how to create your account. ${this.maskEmail(data.email)}.`,
@@ -151,6 +152,11 @@ export class UserService {
 
     await this.prisma.pendingUser.deleteMany({
       where: { token },
+    });
+
+    await this.mailService.sendWelcomeEmail({
+      to: createdUser.email,
+      nome: createdUser.name,
     });
 
     return createdUser;

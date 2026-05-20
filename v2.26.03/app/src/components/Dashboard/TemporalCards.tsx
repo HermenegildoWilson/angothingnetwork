@@ -8,46 +8,77 @@ import {
   Typography,
   type BoxProps,
 } from "@mui/material";
-import { ArrowDownward, ArrowUpward } from "@mui/icons-material";
-import { useEffect, useState } from "react";
+import { ArrowDownward, ArrowUpward, Remove } from "@mui/icons-material";
+import { useState } from "react";
 import type { SensorReadingDto } from "@/services/sensor/types";
 import { useSensorsReading } from "@/hooks/useSensors";
 import type { parameterOptionsName } from "@/config/sensor/types";
 import parameterOptions from "@/config/sensor/parameterOptions";
 
-const stats = (actualReading: SensorReadingDto) =>
+const formatReading = (value: unknown, unit?: string) => {
+  if (value === null || value === undefined || value === "") return "--";
+  const numericValue = Number(value);
+  const displayValue = Number.isNaN(numericValue)
+    ? String(value)
+    : numericValue.toLocaleString("pt-PT", {
+        maximumFractionDigits: 2,
+      });
+  return unit ? `${displayValue}${unit}` : displayValue;
+};
+
+const formatChange = (changeValue: number, unit?: string) => {
+  const formattedValue = Math.abs(changeValue).toLocaleString("pt-PT", {
+    maximumFractionDigits: 2,
+  });
+  const signal = changeValue > 0 ? "+" : changeValue < 0 ? "-" : "";
+
+  return unit
+    ? `${signal}${formattedValue}${unit}`
+    : `${signal}${formattedValue}`;
+};
+
+const getChange = (
+  actualValue: unknown,
+  previousValue: unknown,
+  unit?: string,
+) => {
+  const actualNumber = Number(actualValue);
+  const previousNumber = Number(previousValue);
+  const changeValue =
+    Number.isFinite(actualNumber) && Number.isFinite(previousNumber)
+      ? actualNumber - previousNumber
+      : 0;
+
+  if (changeValue === 0) {
+    return {
+      change: formatChange(changeValue, unit),
+      changeColor: "#64748b",
+      ChangeIcon: <Remove sx={{ fontSize: 14, color: "#64748b" }} />,
+    };
+  }
+
+  return {
+    change: formatChange(changeValue, unit),
+    changeColor: changeValue > 0 ? "#10b981" : "#ef4444",
+    ChangeIcon:
+      changeValue > 0 ? (
+        <ArrowUpward sx={{ fontSize: 14, color: "#10b981" }} />
+      ) : (
+        <ArrowDownward sx={{ fontSize: 14, color: "#ef4444" }} />
+      ),
+  };
+};
+
+const stats = (
+  actualReading?: SensorReadingDto,
+  previousReading?: SensorReadingDto,
+) =>
   ["Temperatura", "Qualidade do Ar", "Humidade", "Pressão do Ar"].map(
     (key: parameterOptionsName) => {
-      const formatReading = (value, unit) => {
-        if (value === null || value === undefined || value === "") return "--";
-        const numericValue = Number(value);
-        const displayValue = Number.isNaN(numericValue)
-          ? String(value)
-          : numericValue.toLocaleString("pt-PT", {
-              maximumFractionDigits: 2,
-            });
-        return unit ? `${displayValue}${unit}` : displayValue;
-      };
-
       const config = parameterOptions[key];
-      const changes = {
-        Temperatura: Number(0.2),
-        Humidade: Number(2),
-        "Qualidade do Ar": Number(-5),
-        "Pressão do Ar": Number(0),
-      };
-      const change = {
-        change: changes[key] >= 0 ? `+${changes[key]}` : `${changes[key]}`,
-        changeColor: changes[key] >= 0 ? "#10b981" : "#ef4444",
-        ChangeIcon:
-          changes[key] >= 0 ? (
-            <ArrowUpward sx={{ fontSize: 14, color: "#10b981" }} />
-          ) : (
-            <ArrowDownward sx={{ fontSize: 14, color: "#ef4444" }} />
-          ),
-      };
-
       const value = actualReading?.[config.field];
+      const previousValue = previousReading?.[config.field];
+      const change = getChange(value, previousValue, config.unit);
 
       return {
         title: config?.name,
@@ -64,13 +95,41 @@ const stats = (actualReading: SensorReadingDto) =>
 
 export default function TemporalCards(props: { boxProps?: BoxProps }) {
   const { SensorReading } = useSensorsReading();
-  const [actualReading, setActualReading] = useState<SensorReadingDto>(
-    SensorReading?.[0],
-  );
+  const [readingPair, setReadingPair] = useState<{
+    key?: string;
+    actual?: SensorReadingDto;
+    previous?: SensorReadingDto;
+  }>({ actual: SensorReading[0] });
 
-  useEffect(() => {
-    setActualReading(SensorReading[0]);
-  }, [SensorReading]);
+  const actualReading = SensorReading[0];
+  const readingKey = actualReading?.sensorCode
+    ? [
+        actualReading.sensorCode,
+        actualReading.timestamp,
+        actualReading.temperature,
+        actualReading.air_quality,
+        actualReading.humidity,
+        actualReading.pressure,
+      ].join(":")
+    : undefined;
+
+  const previousReading =
+    actualReading?.sensorCode === readingPair.actual?.sensorCode
+      ? readingPair.actual
+      : undefined;
+
+  const currentReadingPair =
+    readingPair.key === readingKey
+      ? readingPair
+      : {
+          key: readingKey,
+          actual: actualReading,
+          previous: previousReading,
+        };
+
+  if (readingPair.key !== readingKey) {
+    setReadingPair(currentReadingPair);
+  }
 
   return (
     <Box
@@ -88,8 +147,9 @@ export default function TemporalCards(props: { boxProps?: BoxProps }) {
         ...props.boxProps?.sx,
       }}
     >
-      {stats(actualReading).map((stat, i) => (
-        <Box key={i} sx={{ minWidth: 0 }}>
+      {stats(currentReadingPair.actual, currentReadingPair.previous).map(
+        (stat, i) => (
+          <Box key={i} sx={{ minWidth: 0 }}>
           <Card
             sx={{
               height: "100%",

@@ -32,7 +32,7 @@ export class MailService {
   constructor(private readonly env: EnvService) {}
 
   async sendTemplateEmail(params: {
-    to: string;
+    to: string | string[];
     subject: string;
     template: string;
     context: Record<string, unknown>;
@@ -114,6 +114,98 @@ export class MailService {
         title: 'Redefinição de senha',
         message: `Olá ${nome}, clique no botão abaixo para redefinir sua senha.`,
         nome,
+        url,
+      },
+    });
+  }
+
+  async sendWelcomeEmail(params: {
+    to: string;
+    nome: string;
+  }): Promise<unknown> {
+    const { to, nome } = params;
+    const url = this.env.appUrl;
+
+    return this.sendTemplateEmail({
+      to,
+      subject: 'Bem-vindo à Angothingnetwork',
+      template: 'welcome',
+      context: {
+        title: 'Conta validada com sucesso',
+        message:
+          'A sua conta já foi validada e está pronta para uso. Você já pode acessar a plataforma pelo link abaixo.',
+        nome,
+        url,
+      },
+    });
+  }
+
+  async sendSensorAccessRequestAlert(params: {
+    to: string | string[];
+    requesterName: string;
+    requesterEmail: string;
+    sensorCode: string;
+  }): Promise<unknown> {
+    const { to, requesterName, requesterEmail, sensorCode } = params;
+    const url = `${this.env.appUrl}/sensor-access-requests`;
+
+    return this.sendTemplateEmail({
+      to,
+      subject: 'Nova solicitação de acesso a sensor',
+      template: 'sensor-access-request-alert',
+      context: {
+        title: 'Nova solicitação de acesso',
+        message:
+          'Um usuário solicitou acesso a um sensor. Revise o pedido na plataforma para aprovar ou rejeitar a solicitação.',
+        requesterName,
+        requesterEmail,
+        sensorCode,
+        url,
+      },
+    });
+  }
+
+  async sendSensorAccessRequestApproved(params: {
+    to: string;
+    nome: string;
+    sensorCode: string;
+  }): Promise<unknown> {
+    const { to, nome, sensorCode } = params;
+    const url = `${this.env.appUrl}/realtime`;
+
+    return this.sendTemplateEmail({
+      to,
+      subject: 'Pedido de acesso aprovado',
+      template: 'sensor-access-request-approved',
+      context: {
+        title: 'Acesso ao sensor aprovado',
+        message:
+          'O seu pedido foi aprovado. Você já pode acessar os dados do sensor pela plataforma.',
+        nome,
+        sensorCode,
+        url,
+      },
+    });
+  }
+
+  async sendSensorAccessRequestRejected(params: {
+    to: string;
+    nome: string;
+    sensorCode: string;
+  }): Promise<unknown> {
+    const { to, nome, sensorCode } = params;
+    const url = `${this.env.appUrl}/devices`;
+
+    return this.sendTemplateEmail({
+      to,
+      subject: 'Pedido de acesso rejeitado',
+      template: 'sensor-access-request-rejected',
+      context: {
+        title: 'Pedido de acesso rejeitado',
+        message:
+          'O seu pedido de acesso não foi aprovado neste momento. Você pode consultar outros sensores disponíveis e enviar uma nova solicitação.',
+        nome,
+        sensorCode,
         url,
       },
     });

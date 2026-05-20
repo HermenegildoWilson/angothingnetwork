@@ -5,12 +5,16 @@ import {
 } from '@nestjs/common';
 import { PrismaService } from '../prisma/prisma.service';
 import type { AuthUserPayload } from '../auth/auth.jwt';
+import { MailService } from '../mail/mail.service';
 
 type RequestStatus = 'PENDING' | 'APPROVED' | 'REJECTED';
 
 @Injectable()
 export class SensorAccessRequestService {
-  constructor(private readonly prisma: PrismaService) {}
+  constructor(
+    private readonly prisma: PrismaService,
+    private readonly mailService: MailService,
+  ) {}
 
   async create(user: AuthUserPayload, sensorId: string) {
     if (user.role === 'ADMIN') {
@@ -48,17 +52,25 @@ export class SensorAccessRequestService {
     }
 
     if (existingRequest?.status === 'REJECTED') {
-      return (this.prisma as any).sensorAccessRequest.update({
+      const request = await (this.prisma as any).sensorAccessRequest.update({
         where: { id: existingRequest.id },
         data: { status: 'PENDING', decidedAt: null },
         include: this.includeRelations(),
       });
+
+      await this.notifyAdminsAboutAccessRequest(request);
+
+      return request;
     }
 
-    return (this.prisma as any).sensorAccessRequest.create({
+    const request = await (this.prisma as any).sensorAccessRequest.create({
       data: { sensorId, userId: user.id },
       include: this.includeRelations(),
     });
+
+    await this.notifyAdminsAboutAccessRequest(request);
+
+    return request;
   }
 
   findForUser(user: AuthUserPayload, status?: RequestStatus) {
@@ -93,7 +105,7 @@ export class SensorAccessRequestService {
   async approve(id: string) {
     const request = await this.findPendingRequest(id);
 
-    return this.prisma.$transaction(async (tx) => {
+    const approvedRequest = await this.prisma.$transaction(async (tx) => {
       const existingAllocation = await tx.sensorAllocation.findFirst({
         where: {
           sensorId: request.sensorId,
@@ -129,12 +141,18 @@ export class SensorAccessRequestService {
         include: this.includeRelations(),
       });
     });
+
+    await this.notifyRequesterAboutApprovedRequest(approvedRequest);
+
+    return approvedRequest;
   }
 
   async reject(id: string) {
     await this.findPendingRequest(id);
 
-    return (this.prisma as any).sensorAccessRequest.update({
+    const rejectedRequest = await (
+      this.prisma as any
+    ).sensorAccessRequest.update({
       where: { id },
       data: {
         status: 'REJECTED',
@@ -142,6 +160,10 @@ export class SensorAccessRequestService {
       },
       include: this.includeRelations(),
     });
+
+    await this.notifyRequesterAboutRejectedRequest(rejectedRequest);
+
+    return rejectedRequest;
   }
 
   private async findPendingRequest(id: string) {
@@ -173,5 +195,50 @@ export class SensorAccessRequestService {
         },
       },
     };
+  }
+
+  private async notifyAdminsAboutAccessRequest(request: {
+    sensor: { sensorCode: string };
+    user: { name: string; email: string };
+  }) {
+    const admins = await this.prisma.user.findMany({
+      where: { role: 'ADMIN', deletedAt: null },
+      select: { email: true },
+    });
+
+    const adminEmails = admins.map((admin) => admin.email);
+
+    if (adminEmails.length === 0) {
+      return;
+    }
+
+    await this.mailService.sendSensorAccessRequestAlert({
+      to: adminEmails,
+      requesterName: request.user.name,
+      requesterEmail: request.user.email,
+      sensorCode: request.sensor.sensorCode,
+    });
+  }
+
+  private async notifyRequesterAboutApprovedRequest(request: {
+    sensor: { sensorCode: string };
+    user: { name: string; email: string };
+  }) {
+    await this.mailService.sendSensorAccessRequestApproved({
+      to: request.user.email,
+      nome: request.user.name,
+      sensorCode: request.sensor.sensorCode,
+    });
+  }
+
+  private async notifyRequesterAboutRejectedRequest(request: {
+    sensor: { sensorCode: string };
+    user: { name: string; email: string };
+  }) {
+    await this.mailService.sendSensorAccessRequestRejected({
+      to: request.user.email,
+      nome: request.user.name,
+      sensorCode: request.sensor.sensorCode,
+    });
   }
 }

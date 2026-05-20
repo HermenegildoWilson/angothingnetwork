@@ -9,9 +9,9 @@ import {
 } from "@mui/material";
 import {
   Menu as MenuIcon,
-  Notifications as NotificationsIcon,
   AccountCircle,
   ArrowLeftSharp,
+  VpnKey,
 } from "@mui/icons-material";
 import { useNavigate } from "react-router-dom";
 import { useAuth } from "@/hooks/useAuth";
@@ -54,9 +54,9 @@ export default function Header({ open, toggleDrawer }) {
         <Box sx={{ display: "flex" }}>
           {user ? (
             <>
-              <IconButton onClick={() => navigate("/notifications")}>
-                <Tooltip title={"Notificações"}>
-                  <NotificationsIcon />
+              <IconButton onClick={() => navigate("/sensor-access-requests")}>
+                <Tooltip title={"Pedidos de Acesso"}>
+                  <VpnKey />
                 </Tooltip>
               </IconButton>
               <IconButton onClick={() => navigate("/profile")}>

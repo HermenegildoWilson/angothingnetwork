@@ -15,12 +15,11 @@ import Devices from "@/pages/screens/Devices/Devices";
 import Users from "@/pages/screens/user/Users";
 import Profile from "@/pages/screens/user/Profile";
 import Device from "@/pages/screens/Devices/Device";
-import Notifications from "@/pages/screens/Notifications/Notifications";
+import SensorAccessRequests from "@/pages/screens/SensorAccessRequests/SensorAccessRequests";
 import RealTime from "@/pages/screens/SensorMetrics/RealTime";
 import History from "@/pages/screens/SensorMetrics/History";
 
-export default function AppRoutes() {  
-
+export default function AppRoutes() {
   return (
     <Routes>
       <Route path="/" element={<AppLayout />}>
@@ -38,8 +37,11 @@ export default function AppRoutes() {
 
           <Route path="/devices" element={<Devices />} />
           <Route path="/devices/:id" element={<Device />} />
-          
-          <Route path="/notifications" element={<Notifications />} />
+
+          <Route
+            path="/sensor-access-requests"
+            element={<SensorAccessRequests />}
+          />
 
           <Route path="*" element={<NotFound />} />
         </Route>
