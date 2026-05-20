@@ -283,8 +283,18 @@ export default function History() {
         fullWidth
         maxWidth="sm"
       >
-        <DialogTitle>Filtrar Histórico</DialogTitle>
-        <DialogContent>
+        <DialogTitle>
+          Filtrar Histórico
+          <Typography
+            component="span"
+            variant="body2"
+            color="text.secondary"
+            sx={{ display: "block", mt: 0.5, fontWeight: 500 }}
+          >
+            Ajuste o sensor, o período e o volume de leituras exibidas.
+          </Typography>
+        </DialogTitle>
+        <DialogContent dividers>
           <Stack spacing={2} mt={1}>
             <Autocomplete
               options={sensor.codes}
@@ -324,7 +334,7 @@ export default function History() {
             />
           </Stack>
         </DialogContent>
-        <DialogActions sx={{ px: 3, pb: 3 }}>
+        <DialogActions>
           <Button onClick={() => setOpenDialog(false)}>Cancelar</Button>
           <Button variant="contained" onClick={onHistoryFilter}>
             Aplicar

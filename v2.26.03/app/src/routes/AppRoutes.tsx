@@ -10,7 +10,7 @@ import SignUp from "@/pages/public/SignUp";
 import SignOut from "@/pages/public/SignOut";
 import VerifyEmail from "@/pages/public/VerifyEmail";
 import ValidateSignUp from "@/pages/public/ValidateSignUp";
-import Main from "@/pages/screens/Index";
+import Main from "@/pages/screens/home/Index";
 import Devices from "@/pages/screens/Devices/Devices";
 import Users from "@/pages/screens/user/Users";
 import Profile from "@/pages/screens/user/Profile";

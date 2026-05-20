@@ -4,7 +4,7 @@ import type { ReactNode } from "react";
 import { PersonAdd } from "@mui/icons-material";
 
 export type StyledInputProps = TextFieldProps & {
-  Icon: LucideIcon | typeof PersonAdd;
+  Icon?: LucideIcon | typeof PersonAdd;
 };
 
 export type FormFieldsProps = {

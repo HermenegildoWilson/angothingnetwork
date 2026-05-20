@@ -5,7 +5,7 @@ import {
   DialogContent,
   DialogActions,
   Button,
-  TextField,
+  // TextField,
   Box,
   Alert,
   CircularProgress,
@@ -19,6 +19,7 @@ import type { UserDto } from "@/services/user/types";
 import { userService } from "@/services/user/user.service";
 import { useAlert } from "@/hooks/useAlert";
 import { useAuth } from "@/hooks/useAuth";
+import StyledInput from "../form/StyledInput";
 
 type EditProfileModalProps = {
   open: boolean;
@@ -70,7 +71,7 @@ export default function EditProfileModal({
   }, [profile]);
 
   const handleChange = (
-    e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
+    e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>,
   ) => {
     const { name, value } = e.target;
     setFormData((prev) => ({ ...prev, [name]: value }));
@@ -80,7 +81,9 @@ export default function EditProfileModal({
   };
 
   const handleSelectChange = (
-    e: React.ChangeEvent<HTMLInputElement> | { target: { name?: string; value: unknown } }
+    e:
+      | React.ChangeEvent<HTMLInputElement>
+      | { target: { name?: string; value: unknown } },
   ) => {
     const { name, value } = e.target;
     if (name) {
@@ -108,7 +111,10 @@ export default function EditProfileModal({
     return Object.keys(newErrors).length === 0;
   };
 
-  const showAlert = (text: string, style: "success" | "error" | "warning" | "info") => {
+  const showAlert = (
+    text: string,
+    style: "success" | "error" | "warning" | "info",
+  ) => {
     setAlert({ type: "SHOW", text, style, duration: 4000 });
   };
 
@@ -125,7 +131,9 @@ export default function EditProfileModal({
         username: formData.username,
         email: formData.email,
         phone: formData.phone,
-        role: isAdmin ? (formData.role as "ADMIN" | "CLIENT" | "VISITOR") : undefined,
+        role: isAdmin
+          ? (formData.role as "ADMIN" | "CLIENT" | "VISITOR")
+          : undefined,
       };
 
       const response = await userService.update.profile({
@@ -138,15 +146,13 @@ export default function EditProfileModal({
         onSuccess(response.data as UserDto);
         onClose();
       } else {
-        showAlert(
-          response.message || "Erro ao atualizar perfil",
-          "error"
-        );
+        showAlert(response.message || "Erro ao atualizar perfil", "error");
       }
     } catch (error: unknown) {
       const errorMessage =
         error && typeof error === "object" && "response" in error
-          ? (error as { response?: { data?: { message?: string } } }).response?.data?.message
+          ? (error as { response?: { data?: { message?: string } } }).response
+              ?.data?.message
           : "Erro ao atualizar perfil";
       showAlert(errorMessage || "Erro ao atualizar perfil", "error");
     } finally {
@@ -167,7 +173,6 @@ export default function EditProfileModal({
       fullWidth
       PaperProps={{
         sx: {
-          borderRadius: 3,
           boxShadow: "0 20px 60px -12px rgba(0,0,0,0.15)",
         },
       }}
@@ -187,7 +192,7 @@ export default function EditProfileModal({
         <DialogContent dividers>
           <Box sx={{ display: "flex", flexDirection: "column", gap: 2, pt: 1 }}>
             {/* Name */}
-            <TextField
+            <StyledInput
               label="Nome"
               name="name"
               value={formData.name}
@@ -201,7 +206,7 @@ export default function EditProfileModal({
             />
 
             {/* Username */}
-            <TextField
+            <StyledInput
               label="Username"
               name="username"
               value={formData.username}
@@ -215,7 +220,7 @@ export default function EditProfileModal({
             />
 
             {/* Email - Readonly */}
-            <TextField
+            <StyledInput
               label="Email"
               name="email"
               value={formData.email}
@@ -230,7 +235,7 @@ export default function EditProfileModal({
             />
 
             {/* Phone - Readonly */}
-            <TextField
+            <StyledInput
               label="Telefone"
               name="phone"
               value={formData.phone}
@@ -253,6 +258,7 @@ export default function EditProfileModal({
                   name="role"
                   value={formData.role}
                   label="Role"
+                  sx={{ borderRadius: "12px" }}
                   onChange={handleSelectChange}
                 >
                   <MenuItem value="ADMIN">ADMIN</MenuItem>

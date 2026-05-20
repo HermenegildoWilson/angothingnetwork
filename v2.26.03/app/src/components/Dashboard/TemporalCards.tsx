@@ -67,7 +67,6 @@ export default function TemporalCards(props: { boxProps?: BoxProps }) {
   const [actualReading, setActualReading] = useState<SensorReadingDto>(
     SensorReading?.[0],
   );
-  
 
   useEffect(() => {
     setActualReading(SensorReading[0]);
@@ -76,21 +75,24 @@ export default function TemporalCards(props: { boxProps?: BoxProps }) {
   return (
     <Box
       sx={{
+        width: "100%",
         display: "grid",
-        justifyContent: { xs: "center", md: "flex-start" },
+        justifyContent: "stretch",
         gridTemplateColumns: {
-          md: "repeat(4, minmax(100px, 200px))",
-          xs: "repeat(2, minmax(100px, 160px))",
+          xs: "repeat(auto-fit, minmax(min(100%, 140px), 1fr))",
+          sm: "repeat(2, minmax(160px, 1fr))",
+          lg: "repeat(4, minmax(0, 1fr))",
         },
-        gap: { xs: 1, md: 3 },
+        gap: { xs: 1.25, md: 2, lg: 3 },
         mb: 2,
         ...props.boxProps?.sx,
       }}
     >
       {stats(actualReading).map((stat, i) => (
-        <Box key={i}>
+        <Box key={i} sx={{ minWidth: 0 }}>
           <Card
             sx={{
+              height: "100%",
               borderRadius: 4,
               border: "1px solid #f1f5f9",
               transition: ".4s",
@@ -100,10 +102,17 @@ export default function TemporalCards(props: { boxProps?: BoxProps }) {
               },
             }}
           >
-            <CardContent>
+            <CardContent
+              sx={{
+                p: { xs: 1.5, sm: 2 },
+                "&:last-child": { pb: { xs: 1.5, sm: 2 } },
+              }}
+            >
               <Stack
                 direction="row"
                 justifyContent="space-between"
+                alignItems="flex-start"
+                gap={1}
                 sx={{ mb: 2 }}
               >
                 <Avatar
@@ -123,16 +132,28 @@ export default function TemporalCards(props: { boxProps?: BoxProps }) {
                     color: stat.statusColor,
                     fontWeight: 800,
                     fontSize: "0.65rem",
+                    maxWidth: { xs: 92, sm: "none" },
+                    "& .MuiChip-label": {
+                      overflow: "hidden",
+                      textOverflow: "ellipsis",
+                    },
                   }}
                 />
               </Stack>
-              <Typography variant="h5" fontWeight={900} textAlign={"left"}>
+              <Typography
+                variant="h5"
+                fontWeight={900}
+                textAlign="left"
+                noWrap
+                sx={{ fontSize: { xs: "1.2rem", sm: "1.5rem" } }}
+              >
                 {stat.value}
               </Typography>
               <Typography
                 variant="body2"
                 color="text.secondary"
-                textAlign={"left"}
+                textAlign="left"
+                noWrap
                 sx={{ mt: 0.5 }}
               >
                 {stat.title}

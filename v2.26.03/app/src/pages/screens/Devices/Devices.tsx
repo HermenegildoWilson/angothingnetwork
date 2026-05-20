@@ -1,8 +1,6 @@
 import { useEffect, useState } from "react";
 import { Cpu } from "lucide-react";
 import {
-  Avatar,
-  Box,
   Button,
   Chip,
   Dialog,
@@ -10,7 +8,6 @@ import {
   DialogContent,
   DialogTitle,
   Stack,
-  TextField,
   Typography,
 } from "@mui/material";
 import SmartListItem from "@/components/list/SmartListItem";
@@ -20,6 +17,7 @@ import type { SensorDto } from "@/services/sensor/types";
 import { useNavigate } from "react-router-dom";
 import { useAlert } from "@/hooks/useAlert";
 import { useAuth } from "@/hooks/useAuth";
+import StyledInput from "@/components/form/StyledInput";
 
 const requestLabels = {
   PENDING: { label: "Pendente", color: "warning" },
@@ -126,8 +124,8 @@ export default function Devices() {
   };
 
   useEffect(() => {
-    // eslint-disable-next-line react-hooks/set-state-in-effect
     getDevices();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [user?.role]);
 
   return (
@@ -145,71 +143,90 @@ export default function Devices() {
         }
       >
         {user?.role === "ADMIN"
-          ? devices.map((item, index) => (
-              <SmartListItem
-                item={item}
-                keys={["sensorCode", "createdAt"]}
-                ItemAvatar={Cpu}
-                handleItemClick={handleItemClick}
-                key={item?.id || index}
-              />
-            ))
+          ? devices.map((item, index) => {
+              const smartItem = {
+                ...item,
+                smartListMeta: {
+                  label: item.deletedAt ? "Inativo" : "Ativo",
+                  color: item.deletedAt ? "warning" : "success",
+                  subtitle: "Sensor registado no sistema",
+                },
+              };
+
+              return (
+                <SmartListItem
+                  item={smartItem}
+                  keys={["sensorCode"]}
+                  ItemAvatar={Cpu}
+                  handleItemClick={() => handleItemClick(item)}
+                  key={item?.id || index}
+                />
+              );
+            })
           : devices.map((item) => {
               const lastRequest = item.accessRequests?.[0];
               const requestMeta = lastRequest
                 ? requestLabels[lastRequest.status]
                 : null;
+              const hasApprovedAccess = lastRequest?.status === "APPROVED";
+              const statusLabel = requestMeta?.label ?? "Disponível";
+              const statusColor = requestMeta?.color ?? "primary";
+              const subtitle =
+                lastRequest?.status === "PENDING"
+                  ? "Pedido enviado e aguardando aprovação"
+                  : lastRequest?.status === "APPROVED"
+                    ? "Acesso autorizado para acompanhar este sensor"
+                    : lastRequest?.status === "REJECTED"
+                      ? "Pedido recusado. Pode contactar o administrador"
+                      : "Disponível para solicitação";
+              const smartItem = {
+                ...item,
+                smartListMeta: {
+                  label: statusLabel,
+                  color: statusColor,
+                  subtitle,
+                  action: hasApprovedAccess ? (
+                    <Button
+                      variant="outlined"
+                      size="small"
+                      onClick={() => handleItemClick(item)}
+                    >
+                      Abrir
+                    </Button>
+                  ) : requestMeta ? (
+                    <Chip
+                      label={requestMeta.label}
+                      color={requestMeta.color}
+                      variant="outlined"
+                      size="small"
+                    />
+                  ) : (
+                    <Button
+                      variant="contained"
+                      size="small"
+                      onClick={() => handleRequestAccess(item.id)}
+                      disabled={requestingSensorId === item.id}
+                    >
+                      {requestingSensorId === item.id
+                        ? "A enviar..."
+                        : "Pedir acesso"}
+                    </Button>
+                  ),
+                },
+              };
 
               return (
-                <Box
+                <SmartListItem
                   key={item.id}
-                  sx={{
-                    p: 2,
-                    borderRadius: 2,
-                    bgcolor: "#F8FAFC",
-                    border: "1px solid #E2E8F0",
-                  }}
-                >
-                  <Stack
-                    direction={{ xs: "column", sm: "row" }}
-                    spacing={2}
-                    justifyContent="space-between"
-                    alignItems={{ xs: "stretch", sm: "center" }}
-                  >
-                    <Stack direction="row" spacing={2} alignItems="center">
-                      <Avatar sx={{ bgcolor: "primary.main" }}>
-                        <Cpu size={18} />
-                      </Avatar>
-                      <Box>
-                        <Typography variant="body1" fontWeight={800}>
-                          {item.sensorCode}
-                        </Typography>
-                        <Typography variant="caption" color="text.secondary">
-                          Disponível para solicitação
-                        </Typography>
-                      </Box>
-                    </Stack>
-
-                    {requestMeta ? (
-                      <Chip
-                        label={requestMeta.label}
-                        color={requestMeta.color}
-                        variant="outlined"
-                        sx={{ fontWeight: 700 }}
-                      />
-                    ) : (
-                      <Button
-                        variant="contained"
-                        onClick={() => handleRequestAccess(item.id)}
-                        disabled={requestingSensorId === item.id}
-                      >
-                        {requestingSensorId === item.id
-                          ? "A enviar..."
-                          : "Pedir acesso"}
-                      </Button>
-                    )}
-                  </Stack>
-                </Box>
+                  item={smartItem}
+                  keys={["sensorCode"]}
+                  ItemAvatar={Cpu}
+                  handleItemClick={
+                    hasApprovedAccess
+                      ? () => handleItemClick(item)
+                      : undefined
+                  }
+                />
               );
             })}
       </SmartView>
@@ -220,10 +237,20 @@ export default function Devices() {
         fullWidth
         maxWidth="xs"
       >
-        <DialogTitle>Adicionar Sensor</DialogTitle>
-        <DialogContent>
+        <DialogTitle>
+          Adicionar Sensor
+          <Typography
+            component="span"
+            variant="body2"
+            color="text.secondary"
+            sx={{ display: "block", mt: 0.5, fontWeight: 500 }}
+          >
+            Registe um novo dispositivo para começar a recolher leituras.
+          </Typography>
+        </DialogTitle>
+        <DialogContent dividers>
           <Stack spacing={2} mt={1}>
-            <TextField
+            <StyledInput
               label="Código do sensor"
               value={sensorCode}
               onChange={(event) => setSensorCode(event.target.value)}
@@ -233,7 +260,7 @@ export default function Devices() {
             />
           </Stack>
         </DialogContent>
-        <DialogActions sx={{ px: 3, pb: 3 }}>
+        <DialogActions>
           <Button onClick={handleCloseCreateDialog} disabled={submitting}>
             Cancelar
           </Button>

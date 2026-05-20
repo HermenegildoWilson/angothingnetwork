@@ -1,29 +1,30 @@
 import {
   AccountCircle,
-  Dashboard,
+  Sensors,
   History,
-  Home,
   Login,
   Logout,
   Notifications,
   People,
   PersonAdd,
+  Dashboard,
+  Home,
 } from "@mui/icons-material";
-import { Cpu, HomeIcon } from "lucide-react";
+import { Cpu } from "lucide-react";
 export const SidebarItems = {
   ADMIN: [
-    { text: "Home", path: "/", icon: HomeIcon },
-    { text: "Dashboard", path: "/realtime", icon: Dashboard },
+    { text: "Home", path: "/", icon: Dashboard },
+    { text: "Real Time", path: "/realtime", icon: Sensors },
     { text: "Histórico", path: "/history", icon: History },
-    { text: "Usuários", path: "/users", icon: People },
     { text: "Dispositivos", path: "/devices", icon: Cpu },
     { text: "Notificações", path: "/notifications", icon: Notifications },
+    { text: "Usuários", path: "/users", icon: People },
     { text: "Perfil", path: "/profile", icon: AccountCircle },
     { text: "Sair", path: "/signout", icon: Logout },
   ],
   CLIENT: [
-    { text: "Home", path: "/", icon: HomeIcon },
-    { text: "Dashboard", path: "/realtime", icon: Dashboard },
+    { text: "Home", path: "/", icon: Dashboard },
+    { text: "Real Time", path: "/realtime", icon: Sensors },
     { text: "Histórico", path: "/history", icon: History },
     { text: "Dispositivos", path: "/devices", icon: Cpu },
     { text: "Notificações", path: "/notifications", icon: Notifications },
@@ -31,8 +32,8 @@ export const SidebarItems = {
     { text: "Sair", path: "/signout", icon: Logout },
   ],
   VISITOR: [
-    { text: "Home", path: "/", icon: HomeIcon },
-    { text: "Dashboard", path: "/realtime", icon: Dashboard },
+    { text: "Home", path: "/", icon: Dashboard },
+    { text: "Real Time", path: "/realtime", icon: Sensors },
     { text: "Histórico", path: "/history", icon: History },
     { text: "Dispositivos", path: "/devices", icon: Cpu },
     { text: "Notificações", path: "/notifications", icon: Notifications },

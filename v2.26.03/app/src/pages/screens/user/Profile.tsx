@@ -1,4 +1,13 @@
-import { Avatar, Box, Card, Typography, Divider, Paper, Menu, MenuItem } from "@mui/material";
+import {
+  Avatar,
+  Box,
+  Card,
+  Typography,
+  Divider,
+  Paper,
+  Menu,
+  MenuItem,
+} from "@mui/material";
 import {
   User,
   Mail,
@@ -129,11 +138,12 @@ export default function Profile() {
                 sx={{
                   width: 32,
                   height: 32,
-                  bgcolor: "action.hover",
+                  bgcolor: "transparent",
                   cursor: "pointer",
                   "&:hover": {
                     bgcolor: "action.selected",
                   },
+                  color: "text.secondary",
                 }}
               >
                 ⋮

@@ -228,8 +228,18 @@ export default function RealTime() {
         fullWidth
         maxWidth="xs"
       >
-        <DialogTitle>Filtrar Sensor</DialogTitle>
-        <DialogContent>
+        <DialogTitle>
+          Filtrar Sensor
+          <Typography
+            component="span"
+            variant="body2"
+            color="text.secondary"
+            sx={{ display: "block", mt: 0.5, fontWeight: 500 }}
+          >
+            Escolha qual sensor deve alimentar a leitura em tempo real.
+          </Typography>
+        </DialogTitle>
+        <DialogContent dividers>
           <Stack spacing={2} mt={1}>
             <Autocomplete
               options={sensor.codes}
@@ -253,7 +263,7 @@ export default function RealTime() {
             />
           </Stack>
         </DialogContent>
-        <DialogActions sx={{ px: 3, pb: 3 }}>
+        <DialogActions>
           <Button onClick={() => setOpenDialog(false)}>Cancelar</Button>
           <Button variant="contained" onClick={onSensorChange}>
             Aplicar

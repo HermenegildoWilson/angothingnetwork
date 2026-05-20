@@ -17,7 +17,6 @@ export default function Users() {
   }
 
   const handleItemClick = (item: UserDto) => navigate(`/profile/${item.id}`);
-  const handleCreateNew = () => alert();
 
   useEffect(() => {
     // eslint-disable-next-line react-hooks/set-state-in-effect
@@ -27,10 +26,8 @@ export default function Users() {
   return (
     <SmartView
       title="Usuários"
-      handleCreateNew={handleCreateNew}
       items={users}
       ItemAvatar={User}
-      titleButton="Adicionar"
       voidMessage="Sem usuários cadastrados"
     >
       {users.map((item, index) => (

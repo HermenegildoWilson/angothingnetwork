@@ -1,11 +1,13 @@
 import { sensorService } from "@/services/sensor/sensor.service";
 import {
+  Box,
   Button,
   Dialog,
   DialogTitle,
   DialogContent,
   DialogContentText,
   DialogActions,
+  Typography,
 } from "@mui/material";
 import { AlertCircle } from "lucide-react";
 
@@ -33,31 +35,50 @@ export default function DialogDeleteDevice(
       <Dialog
         open={deleteDialogOpen}
         onClose={() => setDeleteDialogOpen(false)}
-        PaperProps={{ sx: { borderRadius: 5, p: 1, minWidth: 320 } }}
+        PaperProps={{ sx: { minWidth: 320 } }}
       >
         <DialogTitle
           sx={{
-            fontWeight: "bold",
             display: "flex",
             alignItems: "center",
             gap: 1.5,
           }}
         >
-          <AlertCircle color="#f44336" /> Confirmar Exclusão
+          <Box
+            sx={{
+              width: 42,
+              height: 42,
+              display: "grid",
+              placeItems: "center",
+              borderRadius: 3,
+              color: "error.main",
+              bgcolor: "rgba(239, 68, 68, 0.1)",
+            }}
+          >
+            <AlertCircle size={22} />
+          </Box>
+          <Box>
+            Confirmar Eliminação
+            <Typography
+              component="span"
+              variant="body2"
+              color="text.secondary"
+              sx={{ display: "block", mt: 0.5, fontWeight: 500 }}
+            >
+              Esta ação remove o sensor e os seus dados associados.
+            </Typography>
+          </Box>
         </DialogTitle>
-        <DialogContent>
+        <DialogContent dividers>
           <DialogContentText>
             Deseja realmente eliminar o sensor <strong>{deviceId}</strong>?
             Todos os dados históricos serão removidos.
           </DialogContentText>
         </DialogContent>
-        <DialogActions sx={{ p: 2, gap: 1 }}>
+        <DialogActions>
           <Button
             onClick={() => setDeleteDialogOpen(false)}
-            sx={{
-              color: "text.secondary",
-              fontWeight: "bold",
-            }}
+            color="inherit"
           >
             Cancelar
           </Button>
@@ -66,8 +87,6 @@ export default function DialogDeleteDevice(
             variant="contained"
             color="error"
             sx={{
-              borderRadius: 2,
-              fontWeight: "bold",
               px: 3,
             }}
           >

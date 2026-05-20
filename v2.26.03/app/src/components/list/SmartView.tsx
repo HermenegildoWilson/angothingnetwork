@@ -8,8 +8,8 @@ import {
   useMediaQuery,
   Card,
 } from "@mui/material";
-import { Cpu, Plus } from "lucide-react";
-import type { ReactNode } from "react";
+import { Plus } from "lucide-react";
+import type { ElementType, ReactNode } from "react";
 
 type SmartViewProps = {
   items: unknown[];
@@ -17,7 +17,7 @@ type SmartViewProps = {
   subTitle?: string;
   titleButton?: string;
   voidMessage?: string;
-  ItemAvatar: typeof Cpu;
+  ItemAvatar: ElementType;
   handleCreateNew?: () => void;
   children: ReactNode;
 };
@@ -84,8 +84,6 @@ export default function SmartView(smartViewProps: SmartViewProps) {
               startIcon={<Plus size={25} />}
               onClick={handleCreateNew}
               sx={{
-                borderRadius: 2,
-                fontWeight: "bold",
                 py: 1,
               }}
             >
@@ -99,6 +97,7 @@ export default function SmartView(smartViewProps: SmartViewProps) {
             flexFlow: "column",
             gap: 1.5,
             p: 2,
+            borderRadius: 4,
           }}
         >
           {!items.length ? (
@@ -122,7 +121,7 @@ export default function SmartView(smartViewProps: SmartViewProps) {
                 <Button
                   variant="outlined"
                   onClick={handleCreateNew}
-                  sx={{ borderRadius: 3, mt: 2 }}
+                  sx={{ mt: 2 }}
                 >
                   {titleButton}
                 </Button>
