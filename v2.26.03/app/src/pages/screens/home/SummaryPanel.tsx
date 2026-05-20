@@ -92,11 +92,20 @@ export function SummaryPanel({
   );
 }
 
-export function StationSummaryItem({ station }: { station: SensorDto }) {
+export function StationSummaryItem({
+  onClick,
+  station,
+}: {
+  onClick?: () => void;
+  station: SensorDto;
+}) {
   const isInactive = Boolean(station.deletedAt);
 
   return (
     <Box
+      component={onClick ? "button" : "div"}
+      type={onClick ? "button" : undefined}
+      onClick={onClick}
       sx={{
         p: { xs: 1.25, sm: 1.5 },
         borderRadius: 3,
@@ -107,6 +116,27 @@ export function StationSummaryItem({ station }: { station: SensorDto }) {
         justifyContent: "space-between",
         gap: 1.5,
         minWidth: 0,
+        width: "100%",
+        textAlign: "left",
+        appearance: "none",
+        font: "inherit",
+        color: "inherit",
+        cursor: onClick ? "pointer" : "default",
+        transition:
+          "transform 160ms ease, border-color 160ms ease, background-color 160ms ease",
+        "&:hover": onClick
+          ? {
+              bgcolor: "rgba(236,253,245,0.92)",
+              borderColor: "rgba(16,185,129,0.34)",
+              transform: "translateY(-1px)",
+            }
+          : undefined,
+        "&:focus-visible": onClick
+          ? {
+              outline: "3px solid rgba(25,118,210,0.22)",
+              outlineOffset: 2,
+            }
+          : undefined,
       }}
     >
       <Stack

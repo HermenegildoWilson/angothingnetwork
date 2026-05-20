@@ -1,16 +1,17 @@
 import { env } from "@/config/env/env";
+import { authStore } from "@/services/auth/auth.store";
 import { io, Socket } from "socket.io-client";
 
 let socket: Socket | null = null;
-let currentUserId: string | null = null;
 let currentSensorIdsKey = "";
+let currentAccessToken: string | null = null;
 
-export function getSocket(sensorIds: string[], userId?: string): Socket {
-  const nextUserId = userId ?? null;
+export function getSocket(sensorIds: string[]): Socket {
   const nextSensorIdsKey = sensorIds.join(",");
+  const nextAccessToken = authStore.getState().accessToken;
   const shouldRecreate =
     socket &&
-    (currentUserId !== nextUserId ||
+    (currentAccessToken !== nextAccessToken ||
       (sensorIds.length > 0 && currentSensorIdsKey !== nextSensorIdsKey));
 
   if (socket && !shouldRecreate) return socket;
@@ -20,12 +21,13 @@ export function getSocket(sensorIds: string[], userId?: string): Socket {
   }
 
   socket = io(env.apiUrl, {
-    query: { sensors: sensorIds.join(","), userId },
+    query: { sensors: sensorIds.join(",") },
+    auth: { token: nextAccessToken },
     autoConnect: false,
     // controlamos quando conectar
   });
-  currentUserId = nextUserId;
   currentSensorIdsKey = nextSensorIdsKey;
+  currentAccessToken = nextAccessToken;
 
   return socket;
 }
@@ -35,6 +37,6 @@ export function destroySocket() {
     socket.disconnect();
     socket = null;
   }
-  currentUserId = null;
   currentSensorIdsKey = "";
+  currentAccessToken = null;
 }

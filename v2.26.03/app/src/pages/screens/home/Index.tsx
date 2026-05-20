@@ -99,7 +99,11 @@ export default function Main() {
             onAction={() => navigate("/devices")}
           >
             {stations.map((station) => (
-              <StationSummaryItem key={station.id} station={station} />
+              <StationSummaryItem
+                key={station.id}
+                station={station}
+                onClick={() => navigate(`/devices/${station.id}`)}
+              />
             ))}
           </SummaryPanel>
 

@@ -1,5 +1,9 @@
 import { api } from "@/config/api/api";
-import type { SensorReadingDto, SensorReadingFilters } from "./types";
+import type {
+  SensorPresenceDto,
+  SensorReadingDto,
+  SensorReadingFilters,
+} from "./types";
 import parameterOptions from "@/config/sensor/parameterOptions";
 import type { parameterOptionsName } from "@/config/sensor/types";
 
@@ -24,6 +28,23 @@ const find = {
       const response = await api.get(`/sensorreading`, {
         params: filters,
       });
+
+      return {
+        success: true,
+        data: response.data,
+      };
+    } catch (error) {
+      return {
+        success: false,
+        ...(error.response?.data || error),
+      };
+    }
+  },
+  presence: async () => {
+    try {
+      const response = await api.get<SensorPresenceDto[]>(
+        `/sensorreading/presence`,
+      );
 
       return {
         success: true,

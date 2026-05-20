@@ -21,7 +21,7 @@ export default function SensorsReadingProvider({ children }) {
   useEffect(() => {
     if (sensor.ids.length === 0) return;
 
-    const socket = getSocket(sensor.ids, user?.id);
+    const socket = getSocket(sensor.ids);
 
     socket.on("connect", () => {
       setConnected(true);
@@ -61,7 +61,7 @@ export default function SensorsReadingProvider({ children }) {
   const subscribe = useCallback(
     (sensorId: string) => {
       if (subscribedRef.current.has(sensorId)) return;
-      const socket = getSocket([], user?.id);
+      const socket = getSocket([]);
       socket.emit("subscribe-sensor", sensorId);
       subscribedRef.current.add(sensorId);
     },
@@ -72,7 +72,7 @@ export default function SensorsReadingProvider({ children }) {
   const unsubscribe = useCallback(
     (sensorId: string) => {
       if (!subscribedRef.current.has(sensorId)) return;
-      const socket = getSocket([], user?.id);
+      const socket = getSocket([]);
       socket.emit("unsubscribe-sensor", sensorId);
       subscribedRef.current.delete(sensorId);
     },

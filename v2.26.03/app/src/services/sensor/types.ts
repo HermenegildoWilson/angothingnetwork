@@ -40,7 +40,7 @@ export type SensorAccessRequestDto = SensorAccessRequestSummaryDto & {
     id: string;
     name: string;
     username: string;
-    email: string;
+    email?: string;
     role: "ADMIN" | "CLIENT" | "VISITOR";
   };
 };
@@ -59,4 +59,19 @@ export type SensorReadingFilters = {
   startDate?: string;
   endDate?: string;
   limit?: number;
+};
+
+export type SensorPresenceDto = {
+  user: {
+    id: string;
+    name: string;
+    username: string;
+    email: string;
+    role: "ADMIN" | "CLIENT" | "VISITOR";
+  };
+  connections: number;
+  sensors: {
+    id: string;
+    sensorCode: string;
+  }[];
 };

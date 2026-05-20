@@ -13,6 +13,8 @@ import CreateSensorReadingDto from './dto/create-sensorreading.dto';
 import { Public } from '../auth/decorators/public.decorator';
 import { CurrentUser } from '../auth/decorators/current-user.decorator';
 import type { AuthUserPayload } from '../auth/auth.jwt';
+import { Role } from '../auth/decorators/role.decorator';
+import { UserRole } from '@/generated/prisma/client';
 
 @Controller('sensorreading')
 export class SensorreadingController {
@@ -45,6 +47,12 @@ export class SensorreadingController {
       limit,
       user,
     });
+  }
+
+  @Get('presence')
+  @Role(UserRole.ADMIN, UserRole.CLIENT)
+  findPresence(@CurrentUser() user: AuthUserPayload) {
+    return this.sensorreadingService.findPresence(user);
   }
 
   @Get(':id')

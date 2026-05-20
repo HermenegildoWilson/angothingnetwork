@@ -7,7 +7,7 @@ import CreatesDto from './dto/create-sensorreading.dto';
 import { PrismaService } from '../prisma/prisma.service';
 import { SensorsGateway } from './webSocketGateway';
 import { RedisService } from '@/config/redis/redis.service';
-import { Prisma } from '@/generated/prisma/client';
+import { Prisma, UserRole } from '@/generated/prisma/client';
 import { AuthUserPayload } from '../auth/auth.jwt';
 
 type FindAllReadingsFilters = {
@@ -204,6 +204,85 @@ export class SensorreadingService {
     }
 
     return this.toResponse(reading);
+  }
+
+  async findPresence(user: AuthUserPayload) {
+    const connectedClients = this.gateway.getConnectedClients();
+    const visibleClients = connectedClients;
+
+    const groupedByUser = new Map<
+      string,
+      { sockets: Set<string>; sensorIds: Set<string> }
+    >();
+
+    visibleClients.forEach((client) => {
+      const entry = groupedByUser.get(client.userId) ?? {
+        sockets: new Set<string>(),
+        sensorIds: new Set<string>(),
+      };
+
+      entry.sockets.add(client.clientId);
+      client.sensors.forEach((sensorId) => entry.sensorIds.add(sensorId));
+      groupedByUser.set(client.userId, entry);
+    });
+
+    const userIds = [...groupedByUser.keys()];
+    const sensorIds = [
+      ...new Set(
+        [...groupedByUser.values()].flatMap((entry) => [...entry.sensorIds]),
+      ),
+    ];
+
+    const [users, sensors] = await Promise.all([
+      this.prisma.user.findMany({
+        where: {
+          id: { in: userIds },
+          deletedAt: null,
+          ...(user.role === 'ADMIN'
+            ? {}
+            : { role: { in: [UserRole.CLIENT, UserRole.ADMIN] } }),
+        },
+        select: {
+          id: true,
+          name: true,
+          username: true,
+          email: true,
+          role: true,
+        },
+      }),
+      this.prisma.sensor.findMany({
+        where: { id: { in: sensorIds } },
+        select: { id: true, sensorCode: true },
+      }),
+    ]);
+
+    const userById = new Map(users.map((item) => [item.id, item]));
+    const sensorById = new Map(sensors.map((item) => [item.id, item]));
+
+    return [...groupedByUser.entries()]
+      .map(([userId, entry]) => {
+        const connectedUser = userById.get(userId);
+        if (!connectedUser) return null;
+
+        return {
+          user:
+            user.role === 'ADMIN'
+              ? connectedUser
+              : {
+                  id: connectedUser.id,
+                  name: connectedUser.name,
+                  username: connectedUser.username,
+                  role: connectedUser.role,
+                },
+          connections: entry.sockets.size,
+          sensors: [...entry.sensorIds].map((sensorId) => ({
+            id: sensorId,
+            sensorCode: sensorById.get(sensorId)?.sensorCode ?? sensorId,
+          })),
+        };
+      })
+      .filter((item): item is NonNullable<typeof item> => item !== null)
+      .sort((a, b) => a.user.name.localeCompare(b.user.name));
   }
 
   update() {

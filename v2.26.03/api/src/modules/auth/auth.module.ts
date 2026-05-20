@@ -35,5 +35,6 @@ import { EnvService } from '@/config/env/env.service';
       useClass: RolesGuard,
     },
   ],
+  exports: [AuthService],
 })
 export class AuthModule {}

@@ -1,5 +1,6 @@
 import {
   AccountCircle,
+  FactCheck,
   Sensors,
   History,
   Login,
@@ -8,19 +9,20 @@ import {
   PersonAdd,
   Dashboard,
   Home,
-  VpnKey,
+  OnlinePrediction,
 } from "@mui/icons-material";
 import { Cpu } from "lucide-react";
 export const SidebarItems = {
   ADMIN: [
     { text: "Home", path: "/", icon: Dashboard },
     { text: "Real Time", path: "/realtime", icon: Sensors },
+    { text: "Usuarios Ativos", path: "/presence", icon: OnlinePrediction },
     { text: "Histórico", path: "/history", icon: History },
     { text: "Dispositivos", path: "/devices", icon: Cpu },
     {
       text: "Pedidos de Acesso",
       path: "/sensor-access-requests",
-      icon: VpnKey,
+      icon: FactCheck,
     },
     { text: "Usuários", path: "/users", icon: People },
     { text: "Perfil", path: "/profile", icon: AccountCircle },
@@ -29,25 +31,24 @@ export const SidebarItems = {
   CLIENT: [
     { text: "Home", path: "/", icon: Dashboard },
     { text: "Real Time", path: "/realtime", icon: Sensors },
+    { text: "Usuarios Ativos", path: "/presence", icon: OnlinePrediction },
     { text: "Histórico", path: "/history", icon: History },
     { text: "Dispositivos", path: "/devices", icon: Cpu },
     {
       text: "Pedidos de Acesso",
       path: "/sensor-access-requests",
-      icon: VpnKey,
+      icon: FactCheck,
     },
     { text: "Perfil", path: "/profile", icon: AccountCircle },
     { text: "Sair", path: "/signout", icon: Logout },
   ],
   VISITOR: [
     { text: "Home", path: "/", icon: Dashboard },
-    { text: "Real Time", path: "/realtime", icon: Sensors },
-    { text: "Histórico", path: "/history", icon: History },
     { text: "Dispositivos", path: "/devices", icon: Cpu },
     {
       text: "Pedidos de Acesso",
       path: "/sensor-access-requests",
-      icon: VpnKey,
+      icon: FactCheck,
     },
     { text: "Perfil", path: "/profile", icon: AccountCircle },
     { text: "Sair", path: "/signout", icon: Logout },

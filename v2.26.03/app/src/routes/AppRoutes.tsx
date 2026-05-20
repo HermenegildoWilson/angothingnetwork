@@ -18,6 +18,7 @@ import Device from "@/pages/screens/Devices/Device";
 import SensorAccessRequests from "@/pages/screens/SensorAccessRequests/SensorAccessRequests";
 import RealTime from "@/pages/screens/SensorMetrics/RealTime";
 import History from "@/pages/screens/SensorMetrics/History";
+import Presence from "@/pages/screens/Presence/Presence";
 
 export default function AppRoutes() {
   return (
@@ -29,6 +30,7 @@ export default function AppRoutes() {
         <Route element={<ProtectedRoute />}>
           <Route path="/" element={<Main />} />
           <Route path="/realtime" element={<RealTime />} />
+          <Route path="/presence" element={<Presence />} />
           <Route path="/history" element={<History />} />
 
           <Route path="/users" element={<Users />} />

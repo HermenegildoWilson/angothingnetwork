@@ -11,7 +11,7 @@ import {
   Menu as MenuIcon,
   AccountCircle,
   ArrowLeftSharp,
-  VpnKey,
+  FactCheck,
 } from "@mui/icons-material";
 import { useNavigate } from "react-router-dom";
 import { useAuth } from "@/hooks/useAuth";
@@ -56,7 +56,7 @@ export default function Header({ open, toggleDrawer }) {
             <>
               <IconButton onClick={() => navigate("/sensor-access-requests")}>
                 <Tooltip title={"Pedidos de Acesso"}>
-                  <VpnKey />
+                  <FactCheck />
                 </Tooltip>
               </IconButton>
               <IconButton onClick={() => navigate("/profile")}>
